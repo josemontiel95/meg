@@ -99,14 +99,12 @@ export class UserDetailComponent implements OnInit {
     
   constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) { 
       this.columnDefs = [
-      {headerName: 'Ctrl', field: 'id_usuario' },
-      {headerName: 'Nombre', field: 'nombre' },
-      {headerName: 'Apellido', field: 'apellido'},
-      {headerName: 'Email', field: 'email' },
-      {headerName: 'Fecha de Nacimiento', field: 'fechaDeNac' },
-      //{headerName: 'Foto', field: 'foto'},
-      {headerName: 'Rol', field: 'rol' },
-      {headerName: 'Activo', field: 'active' },
+      {headerName: 'Certificaci&oacute;n', field: 'certificacion' },
+      {headerName: 'Valido por', field: 'diasValidos' },
+      {headerName: 'Edad', field: 'diasDeViejo'},
+      {headerName: 'Asistencia', field: 'asisteciaFecha' },
+      {headerName: 'Aprovado', field: 'aprobadaFecha' },
+      {headerName: 'Estado', field: 'estado' },
 
     ];
     this.rowSelection = "single";
@@ -119,10 +117,12 @@ export class UserDetailComponent implements OnInit {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
-    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    let url = `${this.global.apiRoot}/usuario_salones/get/endpoint.php`;
     let search = new URLSearchParams();
-    search.set('function', 'getAllAdmin');
+    search.set('function', 'getAllSalonesFromUser');
     search.set('token', this.global.token);
+    search.set('rol_usuario_id',  this.global.rol);
+    search.set('id_usuario', this.id);
     this.http.get(url, {search}).subscribe(res => {
                                             console.log(res.json());
                                             this.llenaTabla(res.json());
