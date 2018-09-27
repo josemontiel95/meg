@@ -139,6 +139,16 @@
               <span><b> Marcar Falta </b></span>
             </button>
           </div>
+          <div class="btn-group" style="float: right; padding-right: 5%;" *ngIf="falta && calificando">
+            <button class="btn btn-success"  (click)="toogleFalta();">
+              <span><b> Marcar aprobado </b></span>
+            </button>
+          </div>
+          <div class="btn-group" style="float: right; padding-right: 5%;" *ngIf="!falta && calificando">
+            <button class="btn btn-danger"  (click)="toogleFalta();">
+              <span><b> Marcar no aprobado </b></span>
+            </button>
+          </div>
           <h5 class="title">
               Empleados inscritos:
           </h5>

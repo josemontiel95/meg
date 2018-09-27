@@ -330,7 +330,7 @@ export class HerramientaDetailComponent implements OnInit {
   }
   mostrarInscritos(){
     this.historico=false;
-    this.cargando=1
+    this.cargando=this.cargando+1
     let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
     let search = new URLSearchParams();
     search.set('function',           'getInscritosPorSalon');
@@ -400,6 +400,7 @@ export class HerramientaDetailComponent implements OnInit {
         break;
         case '2':
           // Calificar
+          this.calificar(id_usuario_salon);
           window.alert("En este momento podrias hacer multiseleccion y marcar los aprovados");
         break;
         case '3':
@@ -412,6 +413,32 @@ export class HerramientaDetailComponent implements OnInit {
       }
 
       //this.router.navigate(['calidad/salones/salon-detail/'+id]);
+    }
+  }
+  calificar(id_usuario_salon){
+    let asistencia=this.falta ? '0' : '1';
+    this.cargando=1;
+    this.data.currentGlobal.subscribe(global => this.global = global);
+    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
+    let formData:FormData = new FormData();
+    formData.append('function',          'calificar');
+    formData.append('token',             this.global.token);
+    formData.append('rol_usuario_id',    this.global.rol);
+    formData.append('asistencia',        asistencia);
+    formData.append('id_usuario_salon',  id_usuario_salon);
+
+    this.http.post(url, formData).subscribe(res =>  {
+      this.respuestaCalificar(res.json());
+    } );
+  }
+  respuestaCalificar(res){
+    this.cargando=this.cargando-1;
+    if(res.error!=0){
+      window.alert(res.estatus);
+      location.reload();
+    }else{
+      //reloadGrid
+     this.mostrarInscritos();
     }
   }
   paseLista(id_usuario_salon){
@@ -516,7 +543,7 @@ export class HerramientaDetailComponent implements OnInit {
       window.alert("Todos deben pasar lista.");
       return;
     }
-    this.cargando=1;
+    this.cargando=this.cargando+1;
     this.data.currentGlobal.subscribe(global => this.global = global);
     let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
     let formData:FormData = new FormData();
