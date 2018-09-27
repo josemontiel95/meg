@@ -31,38 +31,37 @@ export class Password
 })
 export class ObraDetailComponent implements OnInit {
   foto: string;
+  private gridApi;
+  private gridColumnApi;
+  rowClassRules;
+  rowSelection;
+  columnDefs;
+  rowData;
+  proyectoForm: FormGroup;
 
-   obraForm: FormGroup;
-
-  Obra = {
-   id_obra:'',
-   obra:'',
-   revenimiento:'',
-   incertidumbre:'',
-   prefijo:'',
-   id_cliente:'',
-   id_concretera:'',
-   tipo:'',
-   localizacion:'',
-   descripcion:'',
-   fechaDeCre:'' ,
-   telefono_residente:'',
-   nombre_residente: '',
-   correo_residente: '' 
+  Proyecto = {
+   id_proyecto:'',
+   proyecto:'',
+   nombreContable:'',
+   cliente:'',
+   pm_id:''
   }
 
   cargandoMessage: string= "";
   actualizarMessageCargando: string= "";
 
+  formatoActive;
   submitted = false;
   hidden = true;
-  cargando= 3;
+  historico = false;
+  cargando;
   imgUrl = "";
   mis_con: Array<any>;
-  mis_cli: Array<any>;
+  mis_pm: Array<any>;
   mis_concreterasActivas: Array<any>;
   mis_clientesActivos: Array<any>;
   estatus: string;
+  formatoStatus;
   onSubmit() { this.submitted = true; }
 
   loginMessage: string= "";
@@ -72,73 +71,72 @@ export class ObraDetailComponent implements OnInit {
   
   id: string;
     
-  constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) { }
+  constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) { 
+    this.columnDefs = [
+      {headerName: 'Ctrl', field: 'id_usuario' },
+      {headerName: 'Empleado', field: 'empleado' },
+      {headerName: 'Proyecto', field: 'estadoPM' },
+      {headerName: 'Asignacion', field: 'estadoPEM' },
+
+
+    ];
+    this.rowSelection = "single";
+    this.rowClassRules = {
+      "row-red-warning": function(params) {
+        var active = params.data.estadoPE;
+        return active == 0;
+      },
+      "row-green-warning": function(params) {
+        var active = params.data.estadoPE;
+        return active == 1;
+      },
+      "row-blue-warning": function(params) {
+        var active = params.data.estadoPE;
+        return active == null || active == "";
+      }
+    };
+  }
 
   ngOnInit() {
     this.data.currentGlobal.subscribe(global => this.global = global);
     this.route.params.subscribe( params => this.id=params.id);
     this.cargando=3;
-    let url = `${this.global.apiRoot}/concretera/get/endpoint.php`;
-    let search = new URLSearchParams();
-    search.set('function',           'getForDroptdownAdmin');
-    search.set('token',              this.global.token);
-    search.set('rol_usuario_id',     this.global.rol);
-    this.http.get(url, {search}).subscribe(res => {this.llenaRoles(res.json());
-                                                 this.rolValidator(res.json());
-                                                });
+   
 
-     url = `${this.global.apiRoot}/cliente/get/endpoint.php`;
-    search = new URLSearchParams();
-    search.set('function',           'getForDroptdownAdmin');
-    search.set('token',              this.global.token);
-    search.set('rol_usuario_id',     this.global.rol);
-    this.http.get(url, {search}).subscribe(res => {this.llenaClientes(res.json());
-                                                   this.labValidator(res.json());
+    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function',          'getProjectManagersForDroptdown');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
+    this.http.get(url, {search}).subscribe(res => {this.llenaPM(res.json());
                                                  });
 
-
-    url = `${this.global.apiRoot}/obra/get/endpoint.php`;
+    url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
 	  search = new URLSearchParams();
 	  search.set('function',            'getByIDAdmin');
     search.set('token',               this.global.token);
     search.set('rol_usuario_id',      this.global.rol);
-    search.set('id_obra',             this.id);
+    search.set('id_proyecto',             this.id);
 	  this.http.get(url, {search}).subscribe(res => {this.llenado(res.json()); 
       this.llenadoValidator(res.json());
     });
 
-    this.obraForm = new FormGroup({
-      'id_obra':            new FormControl({ value:this.Obra.id_obra,           disabled: true },         [Validators.required]),         
-      'obra':               new FormControl({ value:this.Obra.obra,              disabled: this.hidden },  [Validators.required]), 
-      'revenimiento':       new FormControl({ value:this.Obra.revenimiento,      disabled: this.hidden },  [Validators.required, Validators.pattern("^([0-9])*")]), 
-      'incertidumbre':      new FormControl({ value:this.Obra.incertidumbre,     disabled: this.hidden },  [Validators.required, Validators.pattern("^([0-9])*")]), 
-      'prefijo':            new FormControl({ value:this.Obra.prefijo,           disabled: this.hidden },  [Validators.required]), 
-      'id_cliente':         new FormControl({ value:this.Obra.id_cliente,        disabled: this.hidden },  [Validators.required]), 
-      'id_concretera':      new FormControl({ value:this.Obra.id_concretera,     disabled: this.hidden },  [Validators.required]), 
-      'tipo':               new FormControl({ value:this.Obra.tipo,              disabled: this.hidden },  [Validators.required]), 
-      'localizacion':       new FormControl({ value:this.Obra.localizacion,      disabled: this.hidden },  [Validators.required]), 
-      'descripcion':        new FormControl({ value:this.Obra.descripcion,       disabled: this.hidden },  [Validators.required]), 
-      'fechaDeCre':         new FormControl({ value:this.Obra.fechaDeCre,        disabled: this.hidden },  [Validators.required]), 
-      'telefono_residente': new FormControl({ value:this.Obra.telefono_residente,disabled: this.hidden },  [Validators.required, Validators.pattern("^([0-9])*")]), 
-      'nombre_residente':   new FormControl({ value:this.Obra.nombre_residente,  disabled: this.hidden },  [Validators.required]),  
-      'correo_residente':   new FormControl({ value:this.Obra.correo_residente,  disabled: this.hidden },  [Validators.required])   
+    this.proyectoForm = new FormGroup({
+      'id_proyecto':        new FormControl({ value:this.Proyecto.id_proyecto,       disabled: true },         [Validators.required]),         
+      'proyecto':           new FormControl({ value:this.Proyecto.proyecto,          disabled: this.hidden },  [Validators.required]), 
+      'nombreContable':     new FormControl({ value:this.Proyecto.nombreContable,    disabled: this.hidden },  [Validators.required]), 
+      'cliente':            new FormControl({ value:this.Proyecto.cliente,           disabled: this.hidden },  [Validators.required]), 
+      'pm_id':              new FormControl({ value:this.Proyecto.pm_id,             disabled: this.hidden },  [Validators.required])
+      
     });
   }
 
-  get id_obra()               { return this.obraForm.get('id_obra'); }
-  get obra()                  { return this.obraForm.get('obra'); }
-  get revenimiento()          { return this.obraForm.get('revenimiento'); }
-  get incertidumbre()         { return this.obraForm.get('incertidumbre'); }
-  get prefijo()               { return this.obraForm.get('prefijo'); }
-  get id_cliente()            { return this.obraForm.get('id_cliente'); }
-  get id_concretera()         { return this.obraForm.get('id_concretera'); }
-  get tipo()                  { return this.obraForm.get('tipo'); }
-  get descripcion()           { return this.obraForm.get('descripcion'); }
-  get localizacion()          { return this.obraForm.get('localizacion'); }
-  get fechaDeCre()            { return this.obraForm.get('fechaDeCre'); }
-  get telefono_residente()    { return this.obraForm.get('telefono_residente'); }
-  get nombre_residente()      { return this.obraForm.get('nombre_residente'); }
-  get correo_residente()      { return this.obraForm.get('correo_residente'); }
+  get id_proyecto()           { return this.proyectoForm.get('id_proyecto'); }
+  get proyecto()              { return this.proyectoForm.get('proyecto'); }
+  get nombreContable()        { return this.proyectoForm.get('nombreContable'); }
+  get cliente()               { return this.proyectoForm.get('cliente'); }
+  get pm_id()                 { return this.proyectoForm.get('pm_id'); }
+
 
 
   llenadoValidator(respuesta: any){
@@ -171,30 +169,81 @@ export class ObraDetailComponent implements OnInit {
     }
   }
 
-  regresaObra(){
-    this.router.navigate(['administrador/obras']);
+  regresaProyecto(){
+    this.router.navigate(['administrador/proyectos']);
   }
 
-  llenaRoles(resp: any){
-    console.log(resp);
-    this.mis_con= new Array(resp.length);
-    var j=resp.length-1;
+  llenaPM(resp: any){
+    this.mis_pm= new Array(resp.length);
     for (var _i = 0; _i < resp.length; _i++ )
     {
-      this.mis_con[_i]=resp[j];
-      j--;
+      this.mis_pm[_i]=resp[_i];
 
     }
+    console.log(this.mis_pm);
     this.cargando=this.cargando-1;
   }
+  onGridReady(params) {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+    let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function',          'getEmpleadosByID');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
 
-  llenaClientes(resp: any){
-    console.log(resp);
-    this.mis_cli= new Array(resp.length);
-    for (var _i = 0; _i < resp.length; _i++ )
-    {
-      this.mis_cli[_i]=resp[_i];
+    search.set('id_proyecto',       this.id);
+    this.http.get(url, {search}).subscribe(res => {
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
+  }
+  mostrarTodos(){
+    this.cargando=1;
+    this.historico=!this.historico;
+    let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function',          'getAllEmpleadosByID');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
 
+    search.set('id_proyecto',       this.id);
+    this.http.get(url, {search}).subscribe(res => {
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
+    console.log("mostrarTodos :: "+this.historico);
+  }
+  mostrarMenos(){
+    this.cargando=1;
+    this.historico=!this.historico;
+    let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function',          'getEmpleadosByID');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
+
+    search.set('id_proyecto',       this.id);
+    this.http.get(url, {search}).subscribe(res => {
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
+    console.log("mostrarMenos :: "+this.historico);
+  }
+  llenaTabla(repuesta: any){
+    console.log(repuesta)
+    if(repuesta.error==1 || repuesta.error==2 || repuesta.error==3){
+      window.alert(repuesta.estatus);
+      this.router.navigate(['login']);
+    }else{
+      if(repuesta.registros==0){
+        this.rowData="";
+      }else{
+        this.rowData =repuesta;
+      }
     }
     this.cargando=this.cargando-1;
   }
@@ -203,37 +252,28 @@ export class ObraDetailComponent implements OnInit {
     this.hidden = !this.hidden;
     const state = this.hidden ? 'disable' : 'enable';
 
-    Object.keys(this.obraForm.controls).forEach((controlName) => {
-        this.obraForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
+    Object.keys(this.proyectoForm.controls).forEach((controlName) => {
+        this.proyectoForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
     });
-    this.obraForm.controls['id_obra']['disable']();
+    this.proyectoForm.controls['id_proyecto']['disable']();
   }
 
 
-  actualizarObra(){
+  actualizarProyecto(){
     this.cargando=1;
     this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/obra/post/endpoint.php`;
+    let url = `${this.global.apiRoot}/proyectos/post/endpoint.php`;
     let formData:FormData = new FormData();
 
-    formData.append('function',           'upDateAdmin');
-    formData.append('token',              this.global.token);
-    formData.append('rol_usuario_id',     this.global.rol);
+    formData.append('function',               'upDateAdmin');
+    formData.append('token',                  this.global.token);
+    formData.append('rol_usuario_id',         this.global.rol);
     
-    formData.append('id_obra',            this.id);
-    formData.append('obra',               this.obraForm.value.obra);
-    formData.append('prefijo',            this.obraForm.value.prefijo );
-    formData.append('fechaDeCreacion',    this.obraForm.value.fechaDeCre);
-    formData.append('descripcion',        this.obraForm.value.descripcion);
-    formData.append('localizacion',       this.obraForm.value.localizacion);
-    formData.append('cliente_id',         this.obraForm.value.id_cliente);
-    formData.append('concretera',         this.obraForm.value.id_concretera);
-    formData.append('tipo',               this.obraForm.value.tipo);
-    formData.append('revenimiento',       this.obraForm.value.revenimiento  );
-    formData.append('incertidumbre',      this.obraForm.value.incertidumbre );
-    formData.append('telefono_residente', this.obraForm.value.telefono_residente );
-    formData.append('nombre_residente',   this.obraForm.value.nombre_residente );
-    formData.append('correo_residente',   this.obraForm.value.correo_residente );
+    formData.append('id_proyecto',            this.id);
+    formData.append('proyecto',               this.proyectoForm.value.proyecto);
+    formData.append('nombreContable',         this.proyectoForm.value.nombreContable );
+    formData.append('cliente',                this.proyectoForm.value.cliente);
+    formData.append('pm_id',                  this.proyectoForm.value.pm_id);
     
     this.http.post(url, formData).subscribe(res => this.respuestaError(res.json()) );
 
@@ -257,42 +297,20 @@ export class ObraDetailComponent implements OnInit {
   }
 
 
-  llenado(respuesta: any)
-  {
+  llenado(respuesta: any){
     console.log(respuesta);
     
-    this.obraForm.patchValue({
-      id_obra:              respuesta.id_obra,
-      obra:                 respuesta.obra,
-      prefijo:              respuesta.prefijo,
-      fechaDeCre:           respuesta.fechaDeCreacion,
-      descripcion:          respuesta.descripcion,
-      localizacion:         respuesta.localizacion,
-      id_cliente:           respuesta.id_cliente,
-      id_concretera:        respuesta.id_concretera,
-      tipo:                 respuesta.tipo,
-      revenimiento:         respuesta.revenimiento,
-      incertidumbre:        respuesta.incertidumbre,
-      telefono_residente:   respuesta.telefono_residente,
-      nombre_residente:     respuesta.nombre_residente,
-      correo_residente:     respuesta.correo_residente
+    this.proyectoForm.patchValue({
+      id_proyecto:        respuesta.id_proyecto,
+      proyecto:           respuesta.proyecto,
+      nombreContable:     respuesta.nombreContable,
+      cliente:            respuesta.cliente,
+      pm_id:              respuesta.pm_id
     });
+    this.formatoStatus=(respuesta.active == 1 ? true : false);
+    this.formatoActive=respuesta.active;
 
-    if(respuesta.isConcreteraActive==0 ){
-      this.addConcretera(respuesta.id_concretera,respuesta.concretera);
-    }
-    if(respuesta.isClienteActive==0){
-      this.addCliente(respuesta.id_cliente,respuesta.nombre);
-    }
-    if(respuesta.foto == "null"){
-      this.imgUrl= "../assets/img/gabino.jpg";
-    }else{
-      this.imgUrl= this.global.assetsRoot+respuesta.foto;
-    }
-    setTimeout(()=>{  
-      this.cargando=this.cargando-1;
-      console.log("llenado this.cargando: "+this.cargando);
-    }, 0);
+    this.cargando=this.cargando-1;
   }
   
   addConcretera(id_concretera: any,concretera: any){
@@ -312,19 +330,112 @@ export class ObraDetailComponent implements OnInit {
     }
   }
 
-  addCliente(id_cliente: any,cliente: any){
-    let aux= new Array(this.mis_cli.length+1);
-    let index=0;
-    for (var _i = 0; _i < aux.length; _i++ ){
-       if(_i < aux.length-1){
-        aux[_i]=this.mis_cli[_i];
-      }else if(_i == aux.length-1){
-        aux[_i]={'id_cliente':id_cliente,'nombre':"*Desactivado*"+cliente+"*Desactivado*"};
+  onSelectionChanged(event: EventListenerObject) {
+    var selectedRows = this.gridApi.getSelectedRows();
+    var id_usuario = "";
+    var estadoPE = "";
+    var empleado = "";
+
+    selectedRows.forEach(function(selectedRow, index) {
+      id_usuario = selectedRow.id_usuario;
+      estadoPE = selectedRow.estadoPE;
+      empleado = selectedRow.empleado;
+
+    });
+    if(this.formatoStatus){
+      if(Number(estadoPE)==1){
+        if(window.confirm("¿Estas seguro que quieres desasignar a "+empleado+" de este proyecto?")){
+          this.toogleStatus(id_usuario, estadoPE);
+        }else{
+
+        }
+      }else{
+        if(window.confirm("¿Estas seguro que quieres asignar a "+empleado+" a este proyecto?")){
+          this.toogleStatus(id_usuario, estadoPE);
+        }else{
+          
+        }
       }
     }
-    this.mis_cli= new Array(aux.length);
-    for (var _i = 0; _i < aux.length; _i++ ){
-      this.mis_cli[_i]=aux[_i];
+  }
+  toogleStatus(id_usuario, estadoPE){
+    this.cargando=1;
+    this.data.currentGlobal.subscribe(global => this.global = global);
+    let url = `${this.global.apiRoot}/proyectos/post/endpoint.php`;
+    let formData:FormData = new FormData();
+
+    formData.append('function',               'toogleStatus');
+    formData.append('token',                  this.global.token);
+    formData.append('rol_usuario_id',         this.global.rol);
+    
+    formData.append('id_proyecto',            this.id);
+    formData.append('id_usuario',             id_usuario);
+    formData.append('estadoPE',               estadoPE);
+    
+    this.http.post(url, formData).subscribe(res => this.respuesToogle(res.json()) );
+  }
+  proyectoCompletado(){
+    let active=(this.formatoActive == 1 ? '0' : '1');
+
+    this.cargando=1;
+    this.data.currentGlobal.subscribe(global => this.global = global);
+    let url = `${this.global.apiRoot}/proyectos/post/endpoint.php`;
+    let formData:FormData = new FormData();
+
+    formData.append('function',               'toogleStatusProyecto');
+    formData.append('token',                  this.global.token);
+    formData.append('rol_usuario_id',         this.global.rol);
+    
+    formData.append('id_proyecto',            this.id);
+    formData.append('active',                 active);
+
+    this.http.post(url, formData).subscribe(res => {
+      this.formatoActive=(this.formatoActive == 1 ? '0' : '1');
+      this.formatoStatus=!this.formatoStatus;
+      this.respuesToogle(res.json());
+    } );
+  }
+  respuesToogle(resp){
+    console.log(resp);
+    this.cargando=this.cargando-1;
+    if(resp.error!=0){
+      window.alert(resp.estatus);
+      location.reload();
+    }else{
+      if(this.historico){
+        this.cargando=1;
+        let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
+        let search = new URLSearchParams();
+        search.set('function',          'getAllEmpleadosByID');
+        search.set('token',             this.global.token);
+        search.set('rol_usuario_id',    this.global.rol);
+
+        search.set('id_proyecto',       this.id);
+        this.http.get(url, {search}).subscribe(res => {
+          console.log(res.json());
+          this.llenaTabla(res.json());
+          this.gridApi.sizeColumnsToFit();
+        });
+      }else{
+        this.cargando=1;
+        let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
+        let search = new URLSearchParams();
+        search.set('function',          'getEmpleadosByID');
+        search.set('token',             this.global.token);
+        search.set('rol_usuario_id',    this.global.rol);
+
+        search.set('id_proyecto',       this.id);
+        this.http.get(url, {search}).subscribe(res => {
+          console.log(res.json());
+          this.llenaTabla(res.json());
+          this.gridApi.sizeColumnsToFit();
+        });
+      }
     }
-  } 
+    
+  }
 }
+
+
+
+

@@ -1,0 +1,465 @@
+<div [ngClass]="{'loading':true ,'loading-visible': cargando != 0 }">
+    <div class="loader-container">
+        <i class="now-ui-icons loader_refresh spin"></i> 
+    </div>
+</div>
+
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">
+            <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaUsuario();"></i>
+            Perfil de {{this.userForm.value.nombre + ' '+ this.userForm.value.apellido}}
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()" [formGroup]=userForm #formDir="ngForm">
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="id_usuario">Ctrl</label> 
+                  <input type="text" class="form-control" id="id_usuario" required name="id_usuario" placeholder="Puesto" formControlName="id_usuario" >
+                </div>
+              </div>
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="rol_usuario_id">Rol</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
+                  <select   class="form-control"  id="rol_usuario_id "required name="rol_usuario_id" placeholder="Puesto" formControlName="rol_usuario_id">
+                    <option value="Selecciona un rol..."  selected>Selecciona un rol...</option>
+                    <option *ngFor="let puesto of mis_roles" [value]="puesto.id_rol_usuario">
+                      {{puesto.rol}}
+                    </option>
+                  </select>
+                  <div *ngIf="rol_usuario_id.invalid && (rol_usuario_id.dirty || rol_usuario_id.touched)" class="alert alert-danger">
+                    <div *ngIf="rol_usuario_id.errors.required">
+                      Puesto requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="nombre">Nombre</label>
+                  <input type="text" id="nombre"  required class="form-control" placeholder="Nombre" formControlName="nombre" >
+                  <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="alert alert-danger">            
+                    <div *ngIf="nombre.errors.required">
+                      Nombre requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-6 col-12 ">
+                <div class="form-group">
+                  <label>Apellidos</label>
+                  <input type="text" id="apellido"  required name="apellido" class="form-control" placeholder="Apellidos" formControlName="apellido" >
+                  <div *ngIf="apellido.invalid && (apellido.dirty || apellido.touched)" class="alert alert-danger">            
+                    <div *ngIf="apellido.errors.required">
+                      Apellido requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="emailPersonal">Correo Electronico Personal</label>
+                  <input type="text" id="emailPersonal"   required   class="form-control" name="emailPersonal" placeholder="mail@lacocs.com" formControlName="emailPersonal" >
+                  <div *ngIf="emailPersonal.errors && (emailPersonal.dirty || emailPersonal.touched)"class="alert alert-danger">
+                    <div *ngIf="emailPersonal.errors.required">Correo requerido.</div>
+                    <div *ngIf="emailPersonal.errors.pattern">El correo debe contener @</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="emailCorporativo">Correo Electronico Coorporativo</label>
+                  <input type="text" id="emailCorporativo"   required   class="form-control" name="emailCorporativo" placeholder="mail@lacocs.com" formControlName="emailCorporativo" >
+                  <div *ngIf="emailCorporativo.errors && (emailCorporativo.dirty || emailCorporativo.touched)"class="alert alert-danger">
+                    <div *ngIf="emailCorporativo.errors.required">Correo requerido.</div>
+                    <div *ngIf="emailCorporativo.errors.pattern">El correo debe contener @</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="curpNo">CURP</label>
+                  <input type="text" id="curpNo"  required   name="curpNo" class="form-control" placeholder="CURP" formControlName="curpNo" >
+                  <div *ngIf="curpNo.invalid && (curpNo.dirty || curpNo.touched)" class="alert alert-danger">            
+                    <div *ngIf="curpNo.errors.required">
+                      CURP requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="rfcNo">RFC</label>
+                  <input type="text" id="rfcNo"  required name="rfcNo" class="form-control" placeholder="RFC" formControlName="rfcNo" >
+                  <div *ngIf="rfcNo.invalid && (rfcNo.dirty || rfcNo.touched)" class="alert alert-danger">            
+                    <div *ngIf="rfcNo.errors.required">
+                      RFC requerido.
+                    </div>
+                    <div *ngIf="rfcNo.errors.pattern">
+                      Verifica tu R.F.C , recuerda que el R.F.C de personas físicas esta compuesto de 4 caracteres alfanuméricos, mas 6 numeros  y 3 carateres nuevamente alfanuméicos
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="imssNo">N&uacute;mero de IMSS</label>
+                  <input type="text" id="imssNo"  required   name="imssNo" class="form-control" placeholder="IMSS" formControlName="imssNo" >
+                  <div *ngIf="imssNo.invalid && (imssNo.dirty || imssNo.touched)" class="alert alert-danger">            
+                    <div *ngIf="imssNo.errors.required">
+                      N&uacute;mero de IMSS requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="pm_id">Project Manager</label>
+                  <select class="form-control"  id="pm_id" required name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
+                    <option value="" selected>Selecciona un pm...</option>
+                    <option *ngFor="let pm of mis_pm" [value]="pm.id_usuario">
+                      {{pm.nombre}}
+                    </option>
+                  </select>                  
+                  <div *ngIf="pm_id.invalid && (pm_id.dirty || pm_id.touched)" class="alert alert-danger">            
+                    <div *ngIf="pm_id.errors.required">
+                      Project Manager requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6  col-12 ">
+                <div class="form-group">
+                  <label for="empresa_id">Empresa</label> 
+                  <select class="form-control"  id="empresa_id" required name="empresa_id" placeholder="Laboratorio" formControlName="empresa_id">
+                    <option value="Selecciona una empresa..." selected>Selecciona una empresa...</option>
+                    <option *ngFor="let emp of mis_emp" [value]="emp.id_empresa">
+                      {{emp.nombre}}
+                    </option>
+                  </select>
+                  <div *ngIf="empresa_id.invalid && (empresa_id.dirty || empresa_id.touched)" class="alert alert-danger">
+                    <div *ngIf="empresa_id.errors.required">
+                      Empresa requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6  col-12 ">
+                <div class="form-group">
+                  <label>Tipo</label>
+                  <select class="form-control"  id="tipo" required name="tipo" placeholder="Laboratorio" formControlName="tipo">
+                    <option selected>Selecciona un tipo...</option>
+                    <option *ngFor="let tipo of tipos" [value]="tipo.id">
+                      {{tipo.tipo}}
+                    </option>
+                  </select>                  
+                  <div *ngIf="tipo.invalid && (tipo.dirty || tipo.touched)" class="alert alert-danger">            
+                    <div *ngIf="tipo.errors.required">
+                      Tipo requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group"  style="float: right; padding-right: 10%;">
+              <button class="btn btn-info" *ngIf="hidden == true"  (click)="mostrar()">
+                <span><b> Cambiar Datos. </b></span>
+              </button>
+              <button class="btn btn-success" *ngIf="!hidden" [disabled]="userForm.invalid" (click)="actualizarUsuario(  ); ">
+                <span><b> Guardar Cambios. </b></span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card card-user">
+        <div class="image">
+          <img src="../assets/img/Labo.jpg" alt="...">
+        </div>
+        <div class="card-body">
+          <div class="author">
+            <img class="avatar border-gray" src="{{this.imgUrl}}" (click)="subirFoto()" alt="...">
+            <h5 class="title">{{this.userForm.value.nombre + ' '+ this.userForm.value.apellido}}</h5>
+            <p class="description">
+              {{this.userForm.value.rol}}
+            </p>
+          </div>
+        </div>
+        <hr>
+        <div class="button-container">
+          <div class="font-icon-detail">
+            <i class="now-ui-icons ui-1_email-85"></i>
+            <p>{{this.userForm.getRawValue().emailCorporativo}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Certificaciones</h5>
+        </div>
+        <div class="btn-group" style="float: right; padding-right: 5%;">
+          <button class="btn btn-success"  *ngIf="!historial"  (click)="historialCompleto();">
+            <span><b>Historial completo</b></span>
+          </button>
+           <button class="btn btn-default"  *ngIf="historial"  (click)="historialActual();">
+            <span><b>Regresar</b></span>
+          </button>
+        </div>
+        <br><br><br>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 col-12">
+              <ag-grid-angular 
+                #agGrid
+                id="myGrid"
+                style="width: 100%; height: 300px;" 
+                class="ag-theme-balham"
+                [enableSorting]="true"
+                [rowData]="rowData" 
+                [columnDefs]="columnDefs"
+                [enableFilter]="true"
+                [enableColResize]="true"
+                [colResizeDefault]="false"
+                [suppressAutoSize]="true"
+                [rowClassRules]="rowClassRules"
+                [rowSelection]="rowSelection"
+                (selectionChanged)="onSelectionChanged($event)"
+                (gridReady)="onGridReady($event)"
+                >
+              </ag-grid-angular>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Proyectos</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 col-12" *ngIf="llenadoDone">
+              <app-proyectosp-grid [id]="this.id"></app-proyectosp-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Equipo de seguridad</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 col-12" *ngIf="llenadoDone">
+              <app-equipop-grid [id]="this.id"></app-equipop-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Ficha m&eacute;dica</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()" [formGroup]=medicCardForm #formDir="ngForm">
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="tipoSangre">Tipo de Sangre</label>
+                  <select class="form-control"  id="tipo" required name="tipoSangre" placeholder="Laboratorio" formControlName="tipoSangre">
+                    <option selected>Selecciona un tipo...</option>
+                    <option *ngFor="let sangre of sangres" [value]="sangre.id">
+                      {{sangre.tipo}}
+                    </option>
+                  </select>   
+                  <div *ngIf="tipoSangre.invalid && (tipoSangre.dirty || tipoSangre.touched)" class="alert alert-danger">            
+                    <div *ngIf="tipoSangre.errors.required">
+                      Tipo de Sangre requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class=" col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="fechaDeNac">Fecha de nacimiento</label>
+                  <input type="date" id="fechaDeNac"  required name="fechaDeNac" class="form-control" placeholder="yyyy/mm/dd" formControlName="fechaDeNac" >
+                  <div *ngIf="fechaDeNac.invalid && (fechaDeNac.dirty || fechaDeNac.touched)" class="alert alert-danger">            
+                    <div *ngIf="fechaDeNac.errors.required">
+                      Fecha de nacimiento requerida.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class=" col-md-12 col-12 ">
+                <div class="form-group">
+                  <label for="alergias">Alergias</label>
+                  <textarea  id="alergias"    class="form-control" formControlName="alergias" > </textarea>
+                  <div *ngIf="alergias.invalid && (alergias.dirty || alergias.touched)" class="alert alert-danger">            
+                    <div *ngIf="alergias.errors.required">
+                      Alergias requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class=" col-md-12 col-12 ">
+                <div class="form-group">
+                  <label for="conEmerNombre">Nombre del contacto de emergencia</label>
+                  <input type="text" id="conEmerNombre"  required name="conEmerNombre" class="form-control" placeholder="Nombre" formControlName="conEmerNombre" >
+                  <div *ngIf="conEmerNombre.invalid && (conEmerNombre.dirty || conEmerNombre.touched)" class="alert alert-danger">            
+                    <div *ngIf="conEmerNombre.errors.required">
+                      Nombre del contacto de emergencia requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="conEmerParentesco">Parentesco</label>
+                  <input type="text" id="conEmerParentesco"  required   name="conEmerParentesco" class="form-control" placeholder="Parentesco" formControlName="conEmerParentesco" >
+                  <div *ngIf="conEmerParentesco.invalid && (conEmerParentesco.dirty || conEmerParentesco.touched)" class="alert alert-danger">            
+                    <div *ngIf="conEmerParentesco.errors.required">
+                      Parentesco requerido.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="conEmerTelefono">Tel&eacute;fono del contacto de emergencia</label>
+                  <input type="text" id="conEmerTelefono"  required name="conEmerTelefono" class="form-control" placeholder="Tel&eacute;fono" formControlName="conEmerTelefono" >
+                  <div *ngIf="conEmerTelefono.invalid && (conEmerTelefono.dirty || conEmerTelefono.touched)" class="alert alert-danger">            
+                    <div *ngIf="conEmerTelefono.errors.required">
+                      Tel&eacute;fono del contacto de emergencia requerido.
+                    </div>
+                    <div *ngIf="conEmerTelefono.errors.pattern">Tel&eacute;fono solo debe contener numeros</div>              
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 col-12 ">
+                <div class="form-group">
+                  <label for="observacionesMedicas">Obervaciones m&eacute;dicas</label>
+                  <textarea  id="observacionesMedicas"     class="form-control" formControlName="observacionesMedicas" > </textarea>
+                  <div *ngIf="observacionesMedicas.errors && (observacionesMedicas.dirty || observacionesMedicas.touched)"class="alert alert-danger">
+                    <div *ngIf="observacionesMedicas.errors.required">Obervaciones m&eacute;dicas requeridas.</div>
+                  </div>
+                </div>
+              </div>            
+            </div>
+            <div class="btn-group"  style="float: right; padding-right: 10%;">
+              <button class="btn btn-info" *ngIf="hiddenMedica == true"  (click)="mostrarFichaMedica()">
+                <span><b> Cambiar Datos. </b></span>
+              </button>
+              <button class="btn btn-success" *ngIf="!hiddenMedica" [disabled]="medicCardForm.invalid" (click)="actualizarCartaMedica(); ">
+                <span><b> Guardar Cambios. </b></span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Documentos</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>INE</b></p>
+              <img class="imageDoc" [src]="this.ineIcon" (click)="abrirINE()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(1)">
+                <span><b> Cambiar INE</b></span>
+              </button>
+            </div>
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>Licencia</b></p>
+              <img class="imageDoc" [src]="this.licenciaIcon" (click)="abrirLicencia()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(2)">
+                <span><b> Cambiar Licencia</b></span>
+              </button>
+            </div>
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>CURP</b></p>
+              <img class="imageDoc" [src]="this.curpIcon" (click)="abrirCURP()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(3)">
+                <span><b> Cambiar CURP</b></span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>RFC</b></p>
+              <img class="imageDoc" [src]="this.rfcIcon" (click)="abrirRFC()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(4)">
+                <span><b> Cambiar RFC</b></span>
+              </button>
+            </div>
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>IMSS</b></p>
+              <img class="imageDoc" [src]="this.imssIcon" (click)="abrirIMSS()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(5)">
+                <span><b> Cambiar IMSS</b></span>
+              </button>
+            </div>
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>Contrato</b></p>
+              <img class="imageDoc" [src]="this.contratoIcon" (click)="abrirContrato()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(6)">
+                <span><b> Cambiar Contrato</b></span>
+              </button>
+            </div>
+          </div>
+          <hr>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

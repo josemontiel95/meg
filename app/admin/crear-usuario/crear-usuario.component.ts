@@ -20,7 +20,7 @@ import {
 @Component({
   selector: 'app-crear-usuario',
   templateUrl: './crear-usuario.component.html',
-  styleUrls: ['./crear-usuario.component.scss']
+  styleUrls: ['./crear-usuario.component.scss','../../loadingArrows.css']
 })
 export class CrearUsuarioComponent implements OnInit
   {
@@ -29,15 +29,17 @@ export class CrearUsuarioComponent implements OnInit
               private data: DataService, 
               private http: Http) { }
  
-    id_usuario: string ;
     foto: string;
     laboratorio: string;
     nss: string;
     rol: string;
     submitted = false;
-    hidden = false;
+    hidden = true;
     mis_roles: Array<any>;
     mis_lab: Array<any>;
+    cargando;
+    mis_emp;
+    mis_pm;
     
     userForm: FormGroup;
 
@@ -49,17 +51,27 @@ export class CrearUsuarioComponent implements OnInit
             contrasena: '',
             rol_usuario_id: '',
             nss: '',
-            laboratorio_id: ''};
+            id_usuario: '',
+            emailPersonal: '',
+            emailCorporativo: '',
+            curpNo: '',
+            rfcNo: '',
+            imssNo: '',
+            pm_id: '',
+            empresa_id: '',
+            tipo: '',
+          };
 
 
   crearMessage: string= "";
   crearMessageCargando: string= "";
 
+  tipos = [{"tipo":"Externo", "id":"0"},{"tipo":"Interno", "id":"1"}];
 
     //inicio y llenados
   ngOnInit() {
     this.data.currentGlobal.subscribe(global => this.global = global);
-
+    this.cargando=3;
     let url = `${this.global.apiRoot}/rol/get/endpoint.php`;
     let search = new URLSearchParams();
     search.set('function', 'getForDroptdownAdmin');
@@ -69,47 +81,75 @@ export class CrearUsuarioComponent implements OnInit
                                                  this.rolValidator(res.json());
                                                 });
 
-    url = `${this.global.apiRoot}/laboratorio/get/endpoint.php`;
+
+    url = `${this.global.apiRoot}/empresa/get/endpoint.php`;
     search = new URLSearchParams();
-    search.set('function', 'getForDroptdownAdmin');
-    search.set('token', this.global.token);
-    search.set('rol_usuario_id', "1001");
-    this.http.get(url, {search}).subscribe(res => {this.llenaLaboratorio(res.json());
-                                                   this.labValidator(res.json());
+    search.set('function',          'getForDroptdownAdmin');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
+    this.http.get(url, {search}).subscribe(res => {this.llenaEmpresas(res.json());
                                                  });
 
-     this.userForm = new FormGroup({
-      'apellido': new FormControl(this.Usuario.apellido, Validators.required), 
-      'nombre': new FormControl(this.Usuario.nombre, Validators.required), 
-      'rol_usuario_id': new FormControl(this.Usuario.rol_usuario_id,  Validators.required), 
-      'nss': new FormControl(this.Usuario.nss,), 
-      'laboratorio_id': new FormControl(this.Usuario.laboratorio_id,  Validators.required), 
-      'contrasena': new FormControl(this.Usuario.contrasena,  Validators.required), 
-      'fechaDeNac': new FormControl(this.Usuario.fechaDeNac,  Validators.required), 
-      'email': new FormControl(this.Usuario.email, [Validators.required, Validators.pattern("[^ @]*@[^ @]*") ])
+    url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    search = new URLSearchParams();
+    search.set('function',          'getProjectManagersForDroptdown');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
+    this.http.get(url, {search}).subscribe(res => {this.llenaPM(res.json());
+                                                 });
 
-                                        
-                                      });
+    this.userForm = new FormGroup({
+      'rol_usuario_id':      new FormControl( { value:this.Usuario.rol_usuario_id,   disabled: this.hidden },  [Validators.required]), 
+      'nombre':              new FormControl( { value:this.Usuario.nombre,           disabled: this.hidden },  [Validators.required]), 
+      'apellido':            new FormControl( { value:this.Usuario.apellido,         disabled: this.hidden },  [Validators.required]), 
+      'emailPersonal':       new FormControl( { value:this.Usuario.emailPersonal,    disabled: this.hidden },  [Validators.required, Validators.pattern("[^ @]*@[^ @]*")]), 
+      'emailCorporativo':    new FormControl( { value:this.Usuario.emailCorporativo, disabled: this.hidden },  [Validators.required, Validators.pattern("[^ @]*@[^ @]*")]), 
+      'curpNo':              new FormControl( { value:this.Usuario.curpNo,           disabled: !this.hidden},  [Validators.required, Validators.pattern("[A-Z][AEIOUX][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[HM](AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}([A-Z]|[0-9])[0-9]")]), 
+      'rfcNo':               new FormControl( { value:this.Usuario.rfcNo,            disabled: this.hidden },  [Validators.required, Validators.pattern("([A-ZÑ&]{3,4})([0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))(([A-Z]|[0-9]){2})([A]|[0-9])")]),
+      'imssNo':              new FormControl( { value:this.Usuario.imssNo,           disabled: this.hidden },  [Validators.required]), 
+      'pm_id':               new FormControl( { value:this.Usuario.pm_id,            disabled: this.hidden },  [Validators.required]), 
+      'empresa_id':          new FormControl( { value:this.Usuario.empresa_id,       disabled: this.hidden },  [Validators.required]), 
+      'tipo':                new FormControl( { value:this.Usuario.tipo,             disabled: this.hidden },  [Validators.required]),
+      'contrasena':          new FormControl( { value:this.Usuario.contrasena,       disabled: this.hidden },  [Validators.required])
+    });
 
   }
 
-    get apellido() { return this.userForm.get('apellido'); }
+  //userForm
+  get rol_usuario_id()   { return this.userForm.get('rol_usuario_id'); }
+  get nombre()           { return this.userForm.get('nombre'); }
+  get apellido()         { return this.userForm.get('apellido'); }
+  get emailPersonal()    { return this.userForm.get('emailPersonal'); }
+  get emailCorporativo() { return this.userForm.get('emailCorporativo'); }
+  get curpNo()           { return this.userForm.get('curpNo'); }
+  get rfcNo()            { return this.userForm.get('rfcNo'); }
+  get imssNo()           { return this.userForm.get('imssNo'); }
+  get pm_id()            { return this.userForm.get('pm_id'); }
+  get empresa_id()       { return this.userForm.get('empresa_id'); }
+  get tipo()             { return this.userForm.get('tipo'); }
+  get contrasena()       { return this.userForm.get('contrasena'); }
 
-  get nombre() { return this.userForm.get('nombre'); }
+  llenaEmpresas(resp: any){
+    this.mis_emp= new Array(resp.length);
+    for (var _i = 0; _i < resp.length; _i++ )
+    {
+      this.mis_emp[_i]=resp[_i];
 
-  get rol_usuario_id() { return this.userForm.get('rol_usuario_id'); }
+    }
+    console.log(this.mis_emp);
+    this.cargando=this.cargando-1;
+  }
 
-  get direccion() { return this.userForm.get('direccion'); }
+  llenaPM(resp: any){
+    this.mis_pm= new Array(resp.length);
+    for (var _i = 0; _i < resp.length; _i++ )
+    {
+      this.mis_pm[_i]=resp[_i];
 
-  get laboratorio_id() { return this.userForm.get('laboratorio_id'); }
-
-  get contrasena() { return this.userForm.get('contrasena'); }
-
-  get fechaDeNac() { return this.userForm.get('fechaDeNac'); }
-
-  get email() { return this.userForm.get('email'); }
-
-
+    }
+    console.log(this.mis_pm);
+    this.cargando=this.cargando-1;
+  }
   rolValidator(repuesta: any){
     console.log(repuesta)
     if(repuesta.error==5 || repuesta.error==6){
@@ -130,8 +170,8 @@ export class CrearUsuarioComponent implements OnInit
     }
   }
 
-  llenaRoles(resp: any)
-  {
+  llenaRoles(resp: any){
+    this.cargando=this.cargando-1;
     this.mis_roles= new Array(resp.length);
     var j=resp.length-1;
     for (var _i = 0; _i < resp.length; _i++ )
@@ -142,24 +182,84 @@ export class CrearUsuarioComponent implements OnInit
     }
   }
 
-  llenaLaboratorio(resp: any)
-  {
-    this.mis_lab= new Array(resp.length);
-    for (var _i = 0; _i < resp.length; _i++ )
-    {
-      this.mis_lab[_i]=resp[_i];
-
-    }
-  }
 
 
   regresaUsuario(){
     this.router.navigate(['administrador/usuarios']);
   }
-//insertar-foto
 
 
   onSubmit() { this.submitted = true; }
+
+  validaCURP(){
+    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function',          'getByCURPAdmin');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
+    search.set('curp',              this.userForm.value.curpNo);
+
+    this.http.get(url, {search}).subscribe(res => {
+      this.respuestaValidaCurp(res.json());
+    });
+  }
+  respuestaValidaCurp(res: any){
+    console.log(res);
+    if(res.error!=0){
+      window.alert(res.estatus);
+       location.reload();
+    }
+    else{
+      if(res.existe==1){
+        if(Number(res.rol_usuario_id)<1005){
+          if(Number(res.active) == 1){
+            window.alert("existe un registro para este usuario. Te redireccionaremos");
+            this.router.navigate(['administrador/usuarios/user-detail/'+res.id_usuario]);
+          }else{
+            if(window.confirm("Existe un registro para este usuario pero se encuentra desactivado. Deseas activarlo?")){
+              let url = `${this.global.apiRoot}/usuario/post/endpoint.php`;
+              let formData:FormData = new FormData();
+              
+              formData.append('function', 'activate');
+              formData.append('id_usuario', res.id_usuario);
+              formData.append('rol_usuario_id', "1001");
+              formData.append('token', this.global.token);
+
+              this.http.post(url, formData).subscribe(resp => {
+                this.respuestaSwitch(resp.json(),res.id_usuario);
+              });
+            }else{
+
+            }
+          }
+        }else{
+            window.alert("Existe un registro para este usuario. No tienes el rol correcto para editar este registro");
+        }
+      }else{
+        window.alert("No existe registro para este CURP, por favor completa todos los datos.");
+        this.mostrar();
+      }
+    }
+  }
+  respuestaSwitch(res,id_usuario){
+    console.log(res)
+    if(res.error!=0){
+      window.alert(res.estatus);
+      location.reload();
+    }
+    else{
+      this.router.navigate(['administrador/usuarios/user-detail/'+id_usuario]);
+    }
+  }
+  mostrar(){
+    this.hidden = !this.hidden;
+    const state = this.hidden ? 'disable' : 'enable';
+
+    Object.keys(this.userForm.controls).forEach((controlName) => {
+        this.userForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
+    });
+    this.userForm.controls['curpNo']['disable']();
+  }
 
 
   crearUsuario( ){
@@ -170,14 +270,19 @@ export class CrearUsuarioComponent implements OnInit
     formData.append('function', 'insertAdmin');
     formData.append('token', this.global.token);
     formData.append('rol_usuario_id', '1001');
-    formData.append('nombre', this.userForm.value.nombre);
-    formData.append('apellido', this.userForm.value.apellido);
-    formData.append('laboratorio_id', this.userForm.value.laboratorio_id);
-    formData.append('nss', this.userForm.value.nss);
-    formData.append('email', this.userForm.value.email);
-    formData.append('fechaDeNac',this.userForm.value.fechaDeNac);
-    formData.append('rol_usuario_id_new', this.userForm.value.rol_usuario_id);
-    formData.append('constrasena', this.userForm.value.contrasena);
+
+    formData.append('new_rol_usuario_id',this.userForm.value.rol_usuario_id);
+    formData.append('nombre',            this.userForm.value.nombre);
+    formData.append('apellido',          this.userForm.value.apellido);
+    formData.append('emailPersonal',     this.userForm.value.emailPersonal);
+    formData.append('emailCorporativo',  this.userForm.value.emailCorporativo);
+    formData.append('curpNo',            this.userForm.getRawValue().curpNo);
+    formData.append('rfcNo',             this.userForm.value.rfcNo);
+    formData.append('imssNo',            this.userForm.value.imssNo);
+    formData.append('pm_id',             this.userForm.value.pm_id);
+    formData.append('empresa_id',        this.userForm.value.empresa_id);
+    formData.append('tipo',              this.userForm.value.tipo);
+    formData.append('contrasena',        this.userForm.value.contrasena);
 
     this.crearMessageCargando="Cargando...";
     this.http.post(url, formData).subscribe(res => this.diplay(res.json()) );

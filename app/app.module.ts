@@ -11,13 +11,12 @@ import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
 
 import { AppComponent } from './app.component';
-import { JefebLayoutComponent } from './layouts/jefeb-layout/jefeb-layout.component';
 
 import { UserProfileComponent } from './user-profile/user-profile.component';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
-import { SubAdminLayoutComponent } from './layouts/subadmin-layout/subadmin-layout.component';
-import { JefeLabLayoutComponent } from './layouts/JefeLab-layout/jefelab-layout.component';
+import { CalidadLayoutComponent } from './layouts/calidad-layout/calidad-layout.component';
+import { RhInternoLayoutComponent } from './layouts/rhInterno-layout/rhInterno-layout.component';
 
 
 import { DataTablesModule } from 'angular-datatables';
@@ -48,10 +47,9 @@ import { MatProgressBarModule } from '@angular/material';
   declarations: [
     AppComponent,
     AdminLayoutComponent,
-    SubAdminLayoutComponent,
+    CalidadLayoutComponent,
+    RhInternoLayoutComponent,
     LoginComponent,
-    JefebLayoutComponent,
-    JefeLabLayoutComponent,
     UserProfileComponent
   ],
   providers: [DataService,

@@ -6,8 +6,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FooterComponent } from './footer/footer.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebars/sidebar/sidebar.component';
-import { SidebarAdministrativoComponent } from './sidebars/sidebarAdministrativo/sidebarAdministrativo.component';
-import { SidebarJefebComponent } from './sidebars/sidebarJefeB/sidebarjefeb.component';
+import { SidebarCalidadComponent } from './sidebars/sidebarCalidad/sidebarCalidad.component';
+import { SidebarRhInternoComponent } from './sidebars/sidebarRhInterno/sidebarRhInterno.component';
 import { SidebarJefeLab } from './sidebars/sidebarJefeLab/sidebarjefelab.component';
 
 
@@ -20,17 +20,17 @@ import { SidebarJefeLab } from './sidebars/sidebarJefeLab/sidebarjefelab.compone
   declarations: [
     FooterComponent,
     NavbarComponent,
-    SidebarJefebComponent,
+    SidebarRhInternoComponent,
     SidebarComponent,
-    SidebarAdministrativoComponent,
+    SidebarCalidadComponent,
     SidebarJefeLab,
   ],
   exports: [
     FooterComponent,
     NavbarComponent,
-    SidebarJefebComponent,
+    SidebarRhInternoComponent,
     SidebarComponent,
-    SidebarAdministrativoComponent,
+    SidebarCalidadComponent,
     SidebarJefeLab,
   ]
 })

@@ -47,13 +47,35 @@ export class UserDetailComponent implements OnInit {
     hidden = true;
     mis_rolesActivos: Array<any>;
     mis_lab: Array<any>;
+    mis_pm: Array<any>;
     imgUrl = "";
     cargando= 3;
     onSubmit() { this.submitted = true; }
+    ine;
+    licencia;
+    curp;
+    rfc;
+    imss;
+    contrato;
+    ineIcon;
+    licenciaIcon;
+    curpIcon;
+    rfcIcon;
+    imssIcon;
+    contratoIcon;
 
     userForm: FormGroup;
 
     medicCardForm: FormGroup;
+
+
+  passwordForm: FormGroup;
+
+  Password={
+            password1: '',
+            npassword: ''};
+
+    historial=false;
 
     Usuario= {
               id_usuario: '',
@@ -92,54 +114,60 @@ export class UserDetailComponent implements OnInit {
     actBut=false;
     resppass= false;
     exitoCon = false;
-    password1: string;
-    npassword: string;
     id: string;
     size: number;
-    
-  constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) { 
-      this.columnDefs = [
-      {headerName: 'Ctrl', field: 'id_usuario' },
-      {headerName: 'Nombre', field: 'nombre' },
-      {headerName: 'Apellido', field: 'apellido'},
-      {headerName: 'Email', field: 'email' },
-      {headerName: 'Fecha de Nacimiento', field: 'fechaDeNac' },
-      //{headerName: 'Foto', field: 'foto'},
-      {headerName: 'Rol', field: 'rol' },
-      {headerName: 'Activo', field: 'active' },
+    rowClassRules;
 
-    ];
-    this.rowSelection = "single";
+  constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) { 
+    
    }
 
-  onGridReady(params) {
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    console.log("this.global.apiRoot"+this.global.apiRoot);
-    console.log("this.global.token"+this.global.token);
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
 
-    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
-    let search = new URLSearchParams();
-    search.set('function', 'getAllAdmin');
-    search.set('token', this.global.token);
-    this.http.get(url, {search}).subscribe(res => {
-                                            console.log(res.json());
-                                            this.llenaTabla(res.json());
-                                            this.gridApi.sizeColumnsToFit();
-                                          });
+
+  cambiarContrasena(){
+     this.actBut= true;
+     this.desBut= false;
+     this.resppass = false;
+     this.exitoCon = false;
   }
-  llenaTabla(repuesta: any){
-    console.log(repuesta)
-    if(repuesta.error==1 || repuesta.error==2 || repuesta.error==3){
-      window.alert(repuesta.estatus);
-      this.router.navigate(['login']);
-    }else{
-      this.rowData =repuesta;
+  guardarContrasena(){
+    this.actBut = false;
+    this.desBut = true;
+    if(this.passwordForm.value.password1 == this.passwordForm.value.npassword && this.passwordForm.value.password1 != null){
+      this.postContrasena();
+      this.exitoCon = true;
+      //setTimeout(this.switchAlerta(this.exitoCon), 8000);
     }
-    this.cargando=this.cargando-1;
-      console.log("llenaTipos this.cargando: "+this.cargando);
+    else{
+      this.resppass = true;
+    }
   }
+
+  postContrasena(){
+    let url = `${this.global.apiRoot}/usuario/post/endpoint.php`;
+    this.data.currentGlobal.subscribe(global => this.global = global);
+    let formData:FormData = new FormData();
+    formData.append('function', 'upDateContrasena');
+    formData.append('constrasena', this.passwordForm.value.password1);
+    formData.append('id_usuario', this.id);
+
+    formData.append('rol_usuario_id', "1001");
+    formData.append('token', this.global.token);
+    this.http.post(url, formData).subscribe(res => {
+                                          res.json();
+                                          this.upContValidator(res.json());
+                                        });
+   }
+  upContValidator(respuesta: any){
+    console.log(respuesta)
+    if(respuesta.error==1 || respuesta.error==2 || respuesta.error==3){
+      window.alert(respuesta.estatus);
+    }
+    else{
+      
+    }
+  }
+  
 
   ngOnInit() {
     this.data.currentGlobal.subscribe(global => this.global = global);
@@ -165,6 +193,13 @@ export class UserDetailComponent implements OnInit {
                                                  });
 
     url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+     search = new URLSearchParams();
+    search.set('function',          'getProjectManagersForDroptdown');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
+    this.http.get(url, {search}).subscribe(res => {this.llenaPM(res.json());
+                                                 });
+
     search = new URLSearchParams();
     search.set('function', 'getByIDAdmin');
     search.set('token', this.global.token);
@@ -198,7 +233,15 @@ export class UserDetailComponent implements OnInit {
       'conEmerTelefono':     new FormControl( { value:this.MediCard.conEmerTelefono,      disabled: this.hidden },  [Validators.required, Validators.pattern("^([0-9])*$")]), 
       'observacionesMedicas':new FormControl( { value:this.MediCard.observacionesMedicas, disabled: this.hidden })
     });
+    this.passwordForm = new FormGroup({
+      'password1':          new FormControl( { value:this.Password.password1,    disabled: false },  [Validators.required]), 
+      'npassword':          new FormControl( { value:this.Password.npassword,    disabled: false },  [Validators.required]), 
+    });
   }
+
+  get password1()       { return this.passwordForm.get('password1'); }
+  get npassword()       { return this.passwordForm.get('npassword'); }
+
 
   //userForm
   get id_usuario()       { return this.userForm.get('id_usuario'); }
@@ -224,8 +267,7 @@ export class UserDetailComponent implements OnInit {
   get observacionesMedicas() { return this.medicCardForm.get('observacionesMedicas'); }
 
 
-  llenaEmpresas(resp: any)
-  {
+  llenaEmpresas(resp: any){
     this.mis_emp= new Array(resp.length);
     for (var _i = 0; _i < resp.length; _i++ )
     {
@@ -233,6 +275,17 @@ export class UserDetailComponent implements OnInit {
 
     }
     console.log(this.mis_emp);
+    this.cargando=this.cargando-1;
+  }
+
+  llenaPM(resp: any){
+    this.mis_pm= new Array(resp.length);
+    for (var _i = 0; _i < resp.length; _i++ )
+    {
+      this.mis_pm[_i]=resp[_i];
+
+    }
+    console.log(this.mis_pm);
     this.cargando=this.cargando-1;
   }
 
@@ -266,9 +319,7 @@ export class UserDetailComponent implements OnInit {
     }
   }
 
-
-    llenaRoles(resp: any)
-    {
+  llenaRoles(resp: any){
         console.log(resp);
       this.mis_roles= new Array(resp.length);
       var j=resp.length-1;
@@ -281,7 +332,7 @@ export class UserDetailComponent implements OnInit {
       console.log("llenaTipos this.cargando: "+this.cargando);
     }
 
-    llenaLaboratorio(resp: any){
+  llenaLaboratorio(resp: any){
        console.log(resp);
 
       this.mis_lab= new Array(resp.length);
@@ -291,7 +342,12 @@ export class UserDetailComponent implements OnInit {
       }
       this.cargando=this.cargando-1;
       console.log("llenaTipos this.cargando: "+this.cargando);
-    }
+  }
+
+  regresaUsuario(){
+    this.router.navigate(['administrador/usuarios']);
+  }
+
 
   mostrar(){
     this.hidden = !this.hidden;
@@ -302,14 +358,7 @@ export class UserDetailComponent implements OnInit {
     });
     this.userForm.controls['id_usuario']['disable']();
   }
-  mostrarFichaMedica(){
-    this.hiddenMedica = !this.hiddenMedica;
-    const state = this.hiddenMedica ? 'disable' : 'enable';
 
-    Object.keys(this.medicCardForm.controls).forEach((controlName) => {
-        this.medicCardForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
-    });
-  }
 
 
   actualizarUsuario(){
@@ -320,41 +369,22 @@ export class UserDetailComponent implements OnInit {
     formData.append('token',            this.global.token);
     formData.append('rol_usuario_id',   '1001');
 
-    formData.append('id_usuario',       this.userForm.value.id_usuario);
-    formData.append('nombre',           this.userForm.value.nombre);
-    formData.append('apellido',         this.userForm.value.apellido);
-    formData.append('emailPersonal',    this.userForm.value.emailPersonal);
-    formData.append('emailCorporativo', this.userForm.value.emailCorporativo);
-    formData.append('curpNo',           this.userForm.value.curpNo);
-    formData.append('rfcNo',            this.userForm.value.rfcNo);
-    formData.append('imssNo',           this.userForm.value.imssNo);
-    formData.append('pm_id',            this.userForm.value.pm_id);
-    formData.append('empresa_id',       this.userForm.value.empresa_id);
-    formData.append('tipo',             this.userForm.value.tipo);
+    formData.append('id_usuario',        this.userForm.getRawValue().id_usuario);
+    formData.append('new_rol_usuario_id',this.userForm.value.rol_usuario_id);
+    formData.append('nombre',            this.userForm.value.nombre);
+    formData.append('apellido',          this.userForm.value.apellido);
+    formData.append('emailPersonal',     this.userForm.value.emailPersonal);
+    formData.append('emailCorporativo',  this.userForm.value.emailCorporativo);
+    formData.append('curpNo',            this.userForm.value.curpNo);
+    formData.append('rfcNo',             this.userForm.value.rfcNo);
+    formData.append('imssNo',            this.userForm.value.imssNo);
+    formData.append('pm_id',             this.userForm.value.pm_id);
+    formData.append('empresa_id',        this.userForm.value.empresa_id);
+    formData.append('tipo',              this.userForm.value.tipo);
 
     this.http.post(url, formData).subscribe(res => this.respuestaError(res.json()) );
   }
 
-  actualizarCartaMedica(){
-    let url = `${this.global.apiRoot}/usuario/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    this.cargando=1;
-
-    formData.append('function',              'upDateAdminMediCard');
-    formData.append('token',                 this.global.token);
-    formData.append('rol_usuario_id',        '1001');
-
-    formData.append('id_usuario',            this.userForm.value.id_usuario);
-    formData.append('tipoSangre',            this.medicCardForm.value.tipoSangre);
-    formData.append('fechaDeNac',            this.medicCardForm.value.fechaDeNac);
-    formData.append('alergias',              this.medicCardForm.value.alergias);
-    formData.append('conEmerNombre',         this.medicCardForm.value.conEmerNombre);
-    formData.append('conEmerParentesco',     this.medicCardForm.value.conEmerParentesco);
-    formData.append('conEmerTelefono',       this.medicCardForm.value.conEmerTelefono);
-    formData.append('observacionesMedicas',  this.medicCardForm.value.observacionesMedicas);
-
-    this.http.post(url, formData).subscribe(res => this.respuestaErrorMedi(res.json()) );
-  }
 
   respuestaError(resp: any){
     this.cargando=this.cargando-1;
@@ -369,50 +399,84 @@ export class UserDetailComponent implements OnInit {
       //location.reload();
     }
   }
-  respuestaErrorMedi(resp: any){
-    this.cargando=this.cargando-1;
-    if(resp.error!=0)
-    {
-      window.alert(resp.estatus);
-      location.reload();
-    }
-    else
-    {
-      this.mostrarFichaMedica();
-      //location.reload();
-    }
-  }
+
 
 
   subirFoto(){
     this.router.navigate(['administrador/insertar-foto/'+this.id]);
   }
 
-    llenado(respuesta: any){
-      console.log(respuesta);
-      this.userForm.patchValue({
-      id_usuario: respuesta.id_usuario,
-      rol_usuario_id: respuesta.rol_usuario_id,
-      nombre: respuesta.nombre,
-      apellido: respuesta.apellido,
-      emailPersonal: respuesta.emailPersonal,
-      emailCorporativo: respuesta.emailCorporativo,
-      curpNo: respuesta.curpNo,
-      rfcNo: respuesta.rfcNo,
-      imssNo: respuesta.imssNo,
-      pm_id: respuesta.pm_id,
-      empresa_id: respuesta.empresa_id,
-      tipo: respuesta.tipo,
+
+  llenado(respuesta: any){
+    console.log(respuesta);
+    this.userForm.patchValue({
+      id_usuario:        respuesta.id_usuario,
+      rol_usuario_id:    respuesta.rol_usuario_id,
+      nombre:            respuesta.nombre,
+      apellido:          respuesta.apellido,
+      emailPersonal:     respuesta.emailPersonal,
+      emailCorporativo:  respuesta.emailCorporativo,
+      curpNo:            respuesta.curpNo,
+      rfcNo:             respuesta.rfcNo,
+      imssNo:            respuesta.imssNo,
+      pm_id:             respuesta.pm_id,
+      empresa_id:        respuesta.empresa_id,
+      tipo:              respuesta.tipo,
     });
     this.medicCardForm.patchValue({
-      tipoSangre: respuesta.tipoSangre,
-      fechaDeNac: respuesta.fechaDeNac,
-      alergias: respuesta.alergias,
-      conEmerNombre: respuesta.conEmerNombre,
-      conEmerParentesco: respuesta.conEmerParentesco,
-      conEmerTelefono: respuesta.conEmerTelefono,
-      observacionesMedicas: respuesta.observacionesMedicas
+      tipoSangre:            respuesta.tipoSangre,
+      fechaDeNac:            respuesta.fechaDeNac,
+      alergias:              respuesta.alergias,
+      conEmerNombre:         respuesta.conEmerNombre,
+      conEmerParentesco:     respuesta.conEmerParentesco,
+      conEmerTelefono:       respuesta.conEmerTelefono,
+      observacionesMedicas:  respuesta.observacionesMedicas
     });
+    this.ine =       respuesta.ine;
+    this.licencia =  respuesta.licencia;
+    this.curp =      respuesta.curp;
+    this.rfc =       respuesta.rfc;
+    this.imss =      respuesta.imss;
+    this.contrato =  respuesta.contrato;
+
+    if(this.ine=="null"){
+      this.ineIcon = "assets/img/missing.png";
+    }else{
+      this.ineIcon = "assets/img/doc.png";
+    }
+
+    if(this.licencia=="null"){
+      this.licenciaIcon = "assets/img/missing.png";
+    }else{
+      this.licenciaIcon = "assets/img/doc.png";
+    }
+
+    if(this.curp=="null"){
+      this.curpIcon = "assets/img/missing.png";
+    }else{
+      this.curpIcon = "assets/img/doc.png";
+    }
+
+    if(this.rfc=="null"){
+      this.rfcIcon = "assets/img/missing.png";
+    }else{
+      this.rfcIcon = "assets/img/doc.png";
+    }
+
+    if(this.imss=="null"){
+      this.imssIcon = "assets/img/missing.png";
+    }else{
+      this.imssIcon = "assets/img/doc.png";
+    }
+
+    if(this.contrato=="null"){
+      this.contratoIcon = "assets/img/missing.png";
+    }else{
+      this.contratoIcon = "assets/img/doc.png";
+    }
+
+
+
 
     if(respuesta.isRolActive==0){
       this.addRol(respuesta.rol_usuario_id,respuesta.rol);
@@ -445,6 +509,48 @@ export class UserDetailComponent implements OnInit {
     this.mis_roles= new Array(aux.length);
     for (var _i = 0; _i < aux.length; _i++ ){
       this.mis_roles[_i]=aux[_i];
+    }
+  }
+  abrirINE(){
+    if(this.ine=="null"){
+      window.alert("No existe archivo para este empleado");
+    }else{
+      window.open(this.global.assetsRoot+this.ine, "_blank");
+    }
+  }
+  abrirLicencia(){
+    if(this.licencia=="null"){
+      window.alert("No existe archivo para este empleado");
+    }else{
+      window.open(this.global.assetsRoot+this.licencia, "_blank");
+    }
+  }
+  abrirCURP(){
+    if(this.curp=="null"){
+      window.alert("No existe archivo para este empleado");
+    }else{
+      window.open(this.global.assetsRoot+this.curp, "_blank");
+    }
+  }
+  abrirRFC(){
+    if(this.rfc=="null"){
+      window.alert("No existe archivo para este empleado");
+    }else{
+      window.open(this.global.assetsRoot+this.rfc, "_blank");
+    }
+  }
+  abrirIMSS(){
+    if(this.imss=="null"){
+      window.alert("No existe archivo para este empleado");
+    }else{
+      window.open(this.global.assetsRoot+this.imss, "_blank");
+    }
+  }
+  abrirContrato(){
+    if(this.contrato=="null"){
+      window.alert("No existe archivo para este empleado");
+    }else{
+      window.open(this.global.assetsRoot+this.contrato, "_blank");
     }
   }
   

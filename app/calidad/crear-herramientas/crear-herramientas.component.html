@@ -1,0 +1,90 @@
+<div [ngClass]="{'loading':true ,'loading-visible': cargando != 0 }">
+    <div class="loader-container">
+        <i class="now-ui-icons loader_refresh spin"></i> 
+    </div>
+</div>
+
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-10 ml-auto mr-auto">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">
+            <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaUsuario();"></i>
+            Crear Salon
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()" [formGroup]=salonForm #formDir="ngForm">
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="certificacion_id">Certificaci&oacute;n</label>
+                  <select  class="form-control" id="certificacion_id" required   formControlName="certificacion_id">
+                    <option value="" [disabled]="true">Selecciona la certificaci&oacute;n...</option>
+                    <option *ngFor="let certif of mis_certif" [value]="certif.id_certificaciones">
+                      {{certif.certificacion}}
+                    </option>
+                  </select>
+                </div>
+                <div *ngIf="certificacion_id.invalid && (certificacion_id.dirty || certificacion_id.touched)" class="alert alert-danger">
+                  <div *ngIf="certificacion_id.errors.required">
+                    Certificaci&oacute;n requerida.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="fecha">Fecha</label>
+                  <input type="date" id="fecha" class="form-control" required placeholder="Fecha" formControlName="fecha">
+                </div>
+                <div *ngIf="fecha.invalid && (fecha.dirty || fecha.touched)" class="alert alert-danger">
+                  <div *ngIf="fecha.errors.required">
+                    Fecha requerida.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="lugar">Lugar</label>
+                  <input type="text" id="lugar" class="form-control" required placeholder="Lugar" formControlName="lugar">
+                </div>
+                <div *ngIf="lugar.invalid && (lugar.dirty || lugar.touched)" class="alert alert-danger">
+                  <div *ngIf="lugar.errors.required">
+                    Lugar requerido.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="capacidad">Capacidad</label>
+                  <input type="text" id="capacidad" class="form-control" required placeholder="Capacidad" formControlName="capacidad">
+                </div>
+                <div *ngIf="capacidad.invalid && (capacidad.dirty || capacidad.touched)" class="alert alert-danger">
+                  <div *ngIf="capacidad.errors.required">
+                    Capacidad requerida.
+                  </div>
+                  <div *ngIf="capacidad.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group" style="float: right; padding-right: 10%;">
+              <button class="btn btn-success" [disabled]="salonForm.invalid" (click)="crearSalon(); ">
+                <span><b> Guardar Cambios </b></span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
