@@ -1,0 +1,140 @@
+<div [ngClass]="{'loading':true ,'loading-visible': cargando != 0 }">
+    <div class="loader-container">
+        <i class="now-ui-icons loader_refresh spin"></i> 
+    </div>
+</div>
+
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-12 ml-auto mr-auto">
+      <div class="card">
+        <div class="card-header " *ngIf="!formatoStatus">
+          <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaProyecto();"></i>
+          <h4 style="text-align: center;" *ngIf="!formatoStatus" class="card-title">Esta formato esta completado y la edicion ya no esta permitida</h4>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">
+            <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaProyecto();"></i>
+            Proyecto {{this.proyectoForm.value.proyecto}}
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()"  [formGroup]=proyectoForm #formDir="ngForm" > <!-- INICIO DEL FORM -->
+            <div class="row"> <!-- INICIO PRIMER ROW -->
+              <div class="col-md-6 col-12"> <!-- INICIO PRIMER CAMPO -->
+                <div class="form-group">
+                  <label for="id_proyecto">Ctrl</label>
+                  <input type="text" id="id_proyecto"  name="id_proyecto" class="form-control" placeholder="Ctrl" formControlName="id_proyecto">
+                  <div *ngIf="id_proyecto.invalid && (id_proyecto.dirty || id_proyecto.touched)" class="alert alert-danger">            
+                    <div *ngIf="id_proyecto.errors.required">
+                      Ctrl Requerido.
+                    </div>
+                  </div>
+                </div>
+              </div><!-- FIN PRIMER CAMPO -->
+              <div class="col-md-6 col-12"> <!-- INICIO SEGUNDO CAMPO -->
+                <div class="form-group">
+                  <label for="proyecto">Proyecto</label>
+                  <input type="text" id="proyecto"  required class="form-control" placeholder="Proyecto" formControlName="proyecto">
+                  <div *ngIf="proyecto.invalid && (proyecto.dirty || proyecto.touched)"
+                    class="alert alert-danger">    
+                    <div *ngIf="proyecto.errors.required">
+                    Proyecto requerido.
+                    </div>
+                  </div>
+                </div>
+              </div> <!-- FIN SEGUNDO CAMPO -->  
+            </div> <!-- FIN PRIMER ROW -->
+            <div class="row"> <!-- INICIO SEGUNDO ROW -->
+              <div class="col-md-6 col-12"> <!-- INICIO TERCER CAMPO -->
+                <div class="form-group">
+                  <label>Nombre contable</label>
+                  <input type="text" id="nombreContable"  required   name="nombreContable" class="form-control" placeholder="Nombre contable"  formControlName="nombreContable" >
+                  <div *ngIf="nombreContable.invalid && (nombreContable.dirty || nombreContable.touched)"class="alert alert-danger">            
+                    <div *ngIf="nombreContable.errors.required">
+                      Nombre contable requerido.
+                    </div>
+                  </div>
+                </div>
+              </div><!-- FIN TERCER CAMPO -->
+              <div class="col-md-6 col-12"> <!-- INICIO OCTAVO CAMPO -->
+                <div class="form-group">
+                  <label for="pm_id">PM</label> <!--tipo de credencial referido al catalogo de clientes.-->
+                  <select   class="form-control"  id="pm_id" required name="id_concretera" placeholder="Concretera" formControlName="pm_id" >
+                    <option value=""  selected>Selecciona un PM...</option>
+                    <option *ngFor="let concretera of mis_pm" [value]="concretera.id_usuario">
+                      {{concretera.nombre}}
+                    </option>
+                  </select>
+                  <div *ngIf="pm_id.invalid && (pm_id.dirty || pm_id.touched)" class="alert alert-danger">            
+                    <div *ngIf="pm_id.errors.required">
+                      PM requerida.
+                    </div>
+                  </div>
+                </div>
+              </div> <!-- FIN OCTAVO CAMPO -->
+            </div><!-- FIN SEGUNDO ROW -->
+            <div class="row"> <!-- INICIO SEXTO ROW -->
+              <div class="col-md-6 col-12"> <!-- INICIO NOVENO CAMPO -->
+                <div class="form-group">
+                  <label for="cliente">Cliente</label>
+                  <input type="text" id="cliente"  required  name="cliente" class="form-control" placeholder="Cliente" formControlName="cliente">
+                  <div *ngIf="cliente.invalid && (cliente.dirty || cliente.touched)" class="alert alert-danger">            
+                    <div *ngIf="cliente.errors.required"> Cliente requerido.</div>
+                  </div>
+                </div>
+              </div><!-- FIN NOVENO CAMPO -->  
+            </div> <!-- FIN SEXTO ROW -->
+            
+            <div class="row"> 
+              <div class="col-md-12 col-12">
+                  <p style="color: orange">{{cargandoMessage}}<p>
+                  <p style="color: green">{{actualizarMessageCargando}}<p>
+              </div>
+            </div>
+          </form> <!-- FIN DEL FORM -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+   <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title"> Empleados: </h4>
+        </div>
+        <div class="card-body">
+          <ag-grid-angular 
+            #agGrid
+            id="myGrid"
+            style="width: 100%; height: 600px;" 
+            class="ag-theme-balham"
+            [enableSorting]="true"
+            [rowData]="rowData" 
+            [columnDefs]="columnDefs"
+            [enableFilter]="true"
+            [enableColResize]="true"
+            [colResizeDefault]="false"
+            [suppressAutoSize]="true"
+            [rowSelection]="rowSelection"
+            [rowClassRules]="rowClassRules"
+            (selectionChanged)="onSelectionChanged($event)"
+            (gridReady)="onGridReady($event)"
+            >
+          </ag-grid-angular>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

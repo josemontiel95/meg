@@ -130,7 +130,12 @@
               <div class=" col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="pm_id">Project Manager</label>
-                  <input type="text" id="pm_id"  required name="pm_id" class="form-control" placeholder="Project manager" formControlName="pm_id" >
+                  <select class="form-control"  id="pm_id" required name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
+                    <option value="" selected>Selecciona un pm...</option>
+                    <option *ngFor="let pm of mis_pm" [value]="pm.id_usuario">
+                      {{pm.nombre}}
+                    </option>
+                  </select>                  
                   <div *ngIf="pm_id.invalid && (pm_id.dirty || pm_id.touched)" class="alert alert-danger">            
                     <div *ngIf="pm_id.errors.required">
                       Project Manager requerido.
@@ -198,48 +203,44 @@
             <p class="description">
               {{this.userForm.value.rol}}
             </p>
+            <form (ngSubmit)="onSubmit()" [formGroup]=passwordForm #formDir="ngForm">
+              <div class="form-group" [hidden]="desBut">
+                <label for="password1">Contrase&ntilde;a</label>
+                <input class="form-control"  required id="password1" formControlName="password1" placeholder="Contrase&ntilde;a" type="password" >
+                <div *ngIf="password1.invalid && (password1.dirty || password1.touched)" class="alert alert-danger">            
+                  <div *ngIf="password1.errors.required"> Contrase&ntilde;a requerida.</div>
+                </div>
+              </div>
+              <div class="form-group" [hidden]="desBut">
+                <label for="npassword">Contrase&ntilde;a</label>
+                <input class="form-control" required id="npassword" formControlName="npassword" placeholder="Repite Contrase&ntilde;a"type="password" >
+                <div *ngIf="npassword.invalid && (npassword.dirty || npassword.touched)" class="alert alert-danger">            
+                  <div *ngIf="npassword.errors.required"> Contrase&ntilde;a requerida.</div>
+                </div>
+              </div>
+              <div [hidden]= "!resppass" class="alert alert-danger">
+                Las Contrase&ntilde;as no coinciden.
+              </div>
+              <div [hidden]= "!exitoCon" class="alert alert-success">
+                Nueva contrase&ntilde;a actualizada
+              </div>
+              <div class="button-container">
+                <button type="button" class="btn btn-danger btn-round " (click)="cambiarContrasena()" *ngIf="desBut">Cambiar Contrase&ntilde;a</button>
+                <button type="button" class="btn btn-success btn-round " [disabled]="passwordForm.invalid" (click)="guardarContrasena();" *ngIf="actBut">Guardar Contrase&ntilde;a</button>
+              </div>
+            </form>
           </div>
         </div>
         <hr>
         <div class="button-container">
           <div class="font-icon-detail">
             <i class="now-ui-icons ui-1_email-85"></i>
-            <p>{{this.userForm.value.email}}</p>
+            <p>{{this.userForm.getRawValue().emailCorporativo}}</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="title">Cetificaciones</h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-12 col-12">
-              <ag-grid-angular 
-                #agGrid
-                id="myGrid"
-                style="width: 100%; height: 300px;" 
-                class="ag-theme-balham"
-                [enableSorting]="true"
-                [rowData]="rowData" 
-                [columnDefs]="columnDefs"
-                [enableFilter]="true"
-                [enableColResize]="true"
-                [colResizeDefault]="false"
-                [suppressAutoSize]="true"
-                [rowSelection]="rowSelection"
-                (selectionChanged)="onSelectionChanged($event)"
-                (gridReady)="onGridReady($event)"
-                >
-              </ag-grid-angular>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div class="col-md-12">
       <div class="card">
@@ -247,12 +248,13 @@
           <h5 class="title">Ficha m&eacute;dica</h5>
         </div>
         <div class="card-body">
+          <p>Esta informaci&oacute;n es editable solo por el personal de recursos humanos.</p>
           <form (ngSubmit)="onSubmit()" [formGroup]=medicCardForm #formDir="ngForm">
             <div class="row">
               <div class="col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="tipoSangre">Tipo de Sangre</label>
-                  <select class="form-control"  id="tipo" required name="tipoSangre" placeholder="Laboratorio" formControlName="tipoSangre">
+                  <select class="form-control"  id="tipoSangre" required  placeholder="Laboratorio" formControlName="tipoSangre">
                     <option selected>Selecciona un tipo...</option>
                     <option *ngFor="let sangre of sangres" [value]="sangre.id">
                       {{sangre.tipo}}
@@ -341,14 +343,6 @@
                 </div>
               </div>            
             </div>
-            <div class="btn-group"  style="float: right; padding-right: 10%;">
-              <button class="btn btn-info" *ngIf="hiddenMedica == true"  (click)="mostrarFichaMedica()">
-                <span><b> Cambiar Datos. </b></span>
-              </button>
-              <button class="btn btn-success" *ngIf="!hiddenMedica" [disabled]="medicCardForm.invalid" (click)="actualizarCartaMedica(); ">
-                <span><b> Guardar Cambios. </b></span>
-              </button>
-            </div>
           </form>
         </div>
       </div>
@@ -363,54 +357,36 @@
           <div class="row">
             <div class="col-md-4 col-12 ">
               <p style="text-align: center;"><b>INE</b></p>
-              <img class="imageDoc" src="assets/img/doc.png" (click)="abrirINE()" alt="...">
+              <img class="imageDoc" [src]="this.ineIcon" (click)="abrirINE()" alt="...">
               <br>
-              <button class="btn btn-info buttonDoc" (click)="mostrar()">
-                <span><b> Cambiar INE</b></span>
-              </button>
             </div>
             <div class="col-md-4 col-12 ">
               <p style="text-align: center;"><b>Licencia</b></p>
-              <img class="imageDoc" src="assets/img/doc.png" (click)="abrirLicencia()" alt="...">
+              <img class="imageDoc" [src]="this.licenciaIcon" (click)="abrirLicencia()" alt="...">
               <br>
-              <button class="btn btn-info buttonDoc" (click)="mostrar()">
-                <span><b> Cambiar Licencia</b></span>
-              </button>
             </div>
             <div class="col-md-4 col-12 ">
               <p style="text-align: center;"><b>CURP</b></p>
-              <img class="imageDoc" src="assets/img/doc.png" (click)="abrirCURP()" alt="...">
+              <img class="imageDoc" [src]="this.curpIcon" (click)="abrirCURP()" alt="...">
               <br>
-              <button class="btn btn-info buttonDoc" (click)="mostrar()">
-                <span><b> Cambiar CURP</b></span>
-              </button>
             </div>
           </div>
           <hr>
           <div class="row">
             <div class="col-md-4 col-12 ">
               <p style="text-align: center;"><b>RFC</b></p>
-              <img class="imageDoc" src="assets/img/doc.png" (click)="abrirRFC()" alt="...">
+              <img class="imageDoc" [src]="this.rfcIcon" (click)="abrirRFC()" alt="...">
               <br>
-              <button class="btn btn-info buttonDoc" (click)="mostrar()">
-                <span><b> Cambiar RFC</b></span>
-              </button>
             </div>
             <div class="col-md-4 col-12 ">
               <p style="text-align: center;"><b>IMSS</b></p>
-              <img class="imageDoc" src="assets/img/doc.png" (click)="abrirIMSS()" alt="...">
+              <img class="imageDoc" [src]="this.imssIcon" (click)="abrirIMSS()" alt="...">
               <br>
-              <button class="btn btn-info buttonDoc" (click)="mostrar()">
-                <span><b> Cambiar IMSS</b></span>
-              </button>
             </div>
             <div class="col-md-4 col-12 ">
               <p style="text-align: center;"><b>Contrato</b></p>
-              <img class="imageDoc" src="assets/img/doc.png" (click)="abrirContrato()" alt="...">
+              <img class="imageDoc" [src]="this.contratoIcon" (click)="abrirContrato()" alt="...">
               <br>
-              <button class="btn btn-info buttonDoc" (click)="mostrar()">
-                <span><b> Cambiar Contrato</b></span>
-              </button>
             </div>
           </div>
           <hr>

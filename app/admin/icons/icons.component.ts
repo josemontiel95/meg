@@ -27,19 +27,31 @@ export class IconsComponent implements OnInit{
   actBut=false;
   imgUrl="";
   cargando= 1;
+  opciones=false;
+  opcionesMessage="Mostrar opciones";
+  rowClassRules;
+  historial=false;
   constructor( private http: Http, private router: Router, private data: DataService, private route: ActivatedRoute){
 	  this.columnDefs = [
       {headerName: 'Ctrl', field: 'id_usuario' },
       {headerName: 'Nombre', field: 'nombre' },
-      {headerName: 'Apellido', field: 'apellido'},
       {headerName: 'Email coorporativo', field: 'emailCorporativo' },
       {headerName: 'Fecha de Nacimiento', field: 'fechaDeNac' },
-      //{headerName: 'Foto', field: 'foto'},
       {headerName: 'Rol', field: 'rol' },
       {headerName: 'Activo', field: 'active' },
 
     ];
     this.rowSelection = "single";
+    this.rowClassRules = {
+      "row-red-warning": function(params) {
+        var color = params.data.color;
+        return color == 0;
+      },
+      "row-green-warning": function(params) {
+        var color = params.data.color;
+        return color == 1;
+      }
+    };
   }
 
   rowData: any;
@@ -57,7 +69,10 @@ export class IconsComponent implements OnInit{
   detalleUsuario(){
     this.router.navigate(['administrador/usuarios/user-detail/'+this.id]);
   }
-  
+
+  cambiaCargando(aux3: any){
+    this.cargando=this.cargando+aux3;
+  }
 
   onGridReady(params) {
     this.data.currentGlobal.subscribe(global => this.global = global);
@@ -70,11 +85,53 @@ export class IconsComponent implements OnInit{
     let search = new URLSearchParams();
     search.set('function', 'getAllAdmin');
     search.set('token', this.global.token);
+    search.set('status', '0');
     this.http.get(url, {search}).subscribe(res => {
-                                            console.log(res.json());
-                                            this.llenaTabla(res.json());
-                                            this.gridApi.sizeColumnsToFit();
-                                          });
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
+  }
+  cargarHistorial(){
+    this.cargando=1;
+    this.historial=true;
+    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getAllAdmin');
+    search.set('token', this.global.token);
+    search.set('status', '-1');
+    this.http.get(url, {search}).subscribe(res => {
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
+  }
+  quitarHistorial(){
+    this.cargando=1;
+    this.historial=false;
+    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getAllAdmin');
+    search.set('token', this.global.token);
+    search.set('status', '0');
+    this.http.get(url, {search}).subscribe(res => {
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
+  }
+  reloadMainGrid(){
+    this.cargando=1;
+    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getAllAdmin');
+    search.set('token', this.global.token);
+    search.set('status', '0');
+    this.http.get(url, {search}).subscribe(res => {
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
   }
 
   llenaTabla(repuesta: any){
@@ -104,40 +161,45 @@ export class IconsComponent implements OnInit{
      this.desBut = true;
      this.switchActive(1);
    }
-
-   switchActive(active: number){
+  masOpciones(){
+    this.opciones=!this.opciones;
+    if(this.opciones){
+      this.opcionesMessage= "Ocultar opciones"
+    }else{
+      this.opcionesMessage= "Mostrar opciones"
+    }
+  }
+  switchActive(active: number){
     let url = `${this.global.apiRoot}/usuario/post/endpoint.php`;
     let formData:FormData = new FormData();
       
-      if(active == 0){
-        formData.append('function', 'deactivate');
-      }
-      else{
-        formData.append('function', 'activate');
-      }
-        formData.append('id_usuario', this.id);
-        formData.append('rol_usuario_id', "1001");
-        formData.append('token', this.global.token);
+    if(active == 0){
+      formData.append('function',      'deactivate');
+    }
+    else{
+      formData.append('function',      'activate');
+    }
+    formData.append('id_usuario',      this.id);
+    formData.append('rol_usuario_id',  "1001");
+    formData.append('token',           this.global.token);
+    this.http.post(url, formData).subscribe(res => {
+      this.respuestaSwitch(res.json());
+    });
+  }
 
-        this.http.post(url, formData).subscribe(res => {
-                                              this.respuestaSwitch(res.json());
-                                            });
-       
-   }
-
-   respuestaSwitch(res: any){
-     console.log(res);
-     if(res.error!= 0){
-       window.alert("Intentalo otra vez");
-       location.reload();
-     }
-     else{
-       location.reload();
-     }
-   }
+  respuestaSwitch(res: any){
+    console.log(res);
+    if(res.error!= 0){
+      window.alert(res.estatus);
+      location.reload();
+    }
+    else{
+      this.reloadMainGrid()
+    }
+  }
 
 
-   onSelectionChanged(event: EventListenerObject) {
+  onSelectionChanged(event: EventListenerObject) {
     var selectedRows = this.gridApi.getSelectedRows();
     var id = "";
     var nombre = "";
@@ -147,48 +209,37 @@ export class IconsComponent implements OnInit{
     var active = "";
 
     selectedRows.forEach(function(selectedRow, index) {
-      id += selectedRow.id_usuario;
-      nombre += selectedRow.nombre;
-      apellido += selectedRow.apellido;
-      foto += selectedRow.foto;
-      rol += selectedRow.rol;
-      active += selectedRow.active;
+      id        = selectedRow.id_usuario;
+      nombre    = selectedRow.nombre;
+      apellido  = selectedRow.apellido;
+      foto      = selectedRow.foto;
+      rol       = selectedRow.rol;
+      active    = selectedRow.active;
     });
     this.displayShortDescription(id, nombre, apellido, foto, rol, active);
   }
 
   displayShortDescription(id: any, nombre: any, apellido: any, foto: any, rol: any, active: any){
-    
-
-    this.hidden=true;
-    //activar 
-    this.id=id;
-    this.nombre=nombre;
+    this.hidden  =true;
+    this.id      =id;
+    this.nombre  =nombre;
     this.apellido=apellido;
-    this.foto=foto;
-    this.rol=rol;
+    this.foto    =foto;
+    this.rol     =rol;
 
     if(this.foto== "null"){
       this.imgUrl="../assets/img/gabino.jpg";
     }else{
       this.imgUrl= this.global.assetsRoot+this.foto;
     }
-
-
-    if(active == "Si")
-    {
+    if(active == "Si"){
       this.desBut = true;
       this.actBut= false;
-    }
-    else{
+    }else{
       if (active == "No") {
         this.desBut = false;
         this.actBut= true;
       }
     }
   }
-
-
-
-
 }

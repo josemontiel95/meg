@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { BrowserModule  } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
-import { JefebLayoutComponent } from './layouts/jefeb-layout/jefeb-layout.component';
-import { JefeLabLayoutComponent } from './layouts/JefeLab-layout/jefelab-layout.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
-import { SubAdminLayoutComponent } from './layouts/subadmin-layout/subadmin-layout.component';
+import { CalidadLayoutComponent } from './layouts/calidad-layout/calidad-layout.component';
+import { RhInternoLayoutComponent } from './layouts/rhInterno-layout/rhInterno-layout.component';
+
 import { LoginComponent } from './login/login.component';
 import { AppGuard } from './app.guard';
 const routes: Routes =[
@@ -14,24 +14,7 @@ const routes: Routes =[
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
-  },{
-    path: 'jefeBrigada',
-    component:JefebLayoutComponent,
-    children: [
-        {
-      path: '',
-      loadChildren: './layouts/jefeb-layout/jefeb-layout.module#JefebLayoutModule'
-
-  }]},
-  {
-    path: 'administrativo',
-    component:SubAdminLayoutComponent,
-    children: [
-        {
-      path: '',
-      loadChildren: './layouts/subadmin-layout/subadmin-layout.module#SubAdminLayoutModule'
-
-  }]},
+  },
    {
     path: 'administrador',
     component: AdminLayoutComponent,
@@ -42,15 +25,24 @@ const routes: Routes =[
       loadChildren: './layouts/admin-layout/admin-layout.module#AdminLayoutModule'
 
   }]},
-
    {
-    path: 'jefeLaboratorio',
-    component: JefeLabLayoutComponent,
+    path: 'recursosHumanos',
+    component: RhInternoLayoutComponent,
     canActivateChild: [AppGuard],
     children: [
         {
       path: '',
-      loadChildren: './layouts/JefeLab-layout/jefelab-layout.module#JefeLabLayoutModule'
+      loadChildren: './layouts/rhInterno-layout/rhInterno-layout.module#RhInternoLayoutModule'
+
+  }]},
+   {
+    path: 'calidad',
+    component: CalidadLayoutComponent,
+    canActivateChild: [AppGuard],
+    children: [
+        {
+      path: '',
+      loadChildren: './layouts/calidad-layout/calidad-layout.module#CalidadLayoutModule'
 
   }]},
  /* {

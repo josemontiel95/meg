@@ -14,6 +14,7 @@ export class ObrasComponent implements OnInit{
   global: Global;
   private gridApi;
   private gridColumnApi;
+  rowClassRules;
   rowSelection;
   columnDefs;
   id= "";
@@ -27,22 +28,29 @@ export class ObrasComponent implements OnInit{
   actBut=false;
   imgUrl="";
   cargando= 1;
+  historico=false;
   constructor( private http: Http, private router: Router, private data: DataService, private route: ActivatedRoute){
 	  this.columnDefs = [
-      {headerName: 'Ctrl', field: 'id_obra' },
-      {headerName: 'Obra', field: 'obra' },
-      {headerName: 'Fecha de Creacion', field: 'fechaDeCreacion' },
-      {headerName: 'Nombre de Residente', field: 'nombre_residente' },
-      {headerName: 'Concretera', field: 'concretera' },
-      {headerName: 'Tipo', field: 'tipo' },
-      {headerName: 'Cliente', field: 'nombre' },
-      {headerName: 'Created', field: 'createdON' },
-      {headerName: 'Last Edited', field: 'lastEditedON' },
-      {headerName: 'Incertidumbre', field: 'incertidumbre' },
-      {headerName: 'Active', field: 'active' },
+      {headerName: 'Ctrl', field: 'id_proyecto' },
+      {headerName: 'Proyecto', field: 'proyecto' },
+      {headerName: 'Nombre Contable', field: 'nombreContable' },
+      {headerName: 'PM', field: 'pm' },
+      {headerName: 'Estado', field: 'estadoP' },
+      {headerName: 'Fecha de creacion', field: 'createdON' }
+
 
     ];
     this.rowSelection = "single";
+    this.rowClassRules = {
+      "row-red-warning": function(params) {
+        var active = params.data.active;
+        return active == 0;
+      },
+      "row-green-warning": function(params) {
+        var active = params.data.active;
+        return active == 1;
+      }
+    };
   }
 
   rowData: any;
@@ -54,11 +62,7 @@ export class ObrasComponent implements OnInit{
 
 
   crearObra(){
-    this.router.navigate(['administrador/obras/crear-obra']);
-  }
-
-  detalleObra(){ //Cambialo a detalleObra
-    this.router.navigate(['administrador/obras/obra-detail/'+this.id]);
+    this.router.navigate(['administrador/proyectos/crear-proyecto']);
   }
   
 
@@ -69,17 +73,18 @@ export class ObrasComponent implements OnInit{
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
 
-    let url = `${this.global.apiRoot}/obra/get/endpoint.php`;
+    let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
     let search = new URLSearchParams();
     search.set('function', 'getAllAdmin');
     search.set('token', this.global.token);
     search.set('rol_usuario_id', this.global.rol);
+    search.set('status', '0');
     this.http.get(url, {search}).subscribe(res => {
-                                            console.log(res.json());
-                                            this.llenaTabla(res.json());
-                                            this.llenadoValidator(res.json());
-                                            this.gridApi.sizeColumnsToFit();
-                                          });
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.llenadoValidator(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
   }
 
   llenaTabla(repuesta: any){
@@ -91,6 +96,38 @@ export class ObrasComponent implements OnInit{
       this.rowData =repuesta;
     }
     this.cargando=this.cargando-1;
+  }
+  historicoMostrar(){
+    this.cargando=1;
+    this.historico=true;
+    let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getAllAdmin');
+    search.set('token', this.global.token);
+    search.set('rol_usuario_id', this.global.rol);
+    search.set('status', '-1');
+    this.http.get(url, {search}).subscribe(res => {
+                                            console.log(res.json());
+                                            this.llenaTabla(res.json());
+                                            this.llenadoValidator(res.json());
+                                            this.gridApi.sizeColumnsToFit();
+                                          });
+  }
+  historicoDesaparecer(){
+    this.cargando=1;
+    this.historico=false;
+    let url = `${this.global.apiRoot}/proyectos/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getAllAdmin');
+    search.set('token', this.global.token);
+    search.set('rol_usuario_id', this.global.rol);
+    search.set('status', '0');
+    this.http.get(url, {search}).subscribe(res => {
+                                            console.log(res.json());
+                                            this.llenaTabla(res.json());
+                                            this.llenadoValidator(res.json());
+                                            this.gridApi.sizeColumnsToFit();
+                                          });
   }
 
   llenadoValidator(respuesta: any){
@@ -153,51 +190,13 @@ export class ObrasComponent implements OnInit{
    onSelectionChanged(event: EventListenerObject) {
     var selectedRows = this.gridApi.getSelectedRows();
     var id = "";
-    var nombre = "";
-    var prefijo = "";
-    var foto = "";
-    var cliente = "";
-    var active = "";
+
 
     selectedRows.forEach(function(selectedRow, index) {
-      id += selectedRow.id_obra;
-      nombre += selectedRow.obra;
-      prefijo += selectedRow.prefijo;
-      foto += selectedRow.foto;
-      cliente += selectedRow.nombre;
-      active += selectedRow.active;
+      id += selectedRow.id_proyecto;
     });
-    this.displayShortDescription(id, nombre, prefijo, foto, cliente, active);
+    this.router.navigate(['administrador/proyectos/proyecto-detail/'+id]);
   }
 
-  displayShortDescription(id: any, nombre: any, prefijo: any, foto: any, cliente: any, active: any){
-    
-    
-    this.hidden=true;
-    //activar 
-    this.id=id;
-    this.nombre=nombre;
-    this.prefijo=prefijo;
-    this.foto=foto;
-    this.cliente=cliente;
-
-    if(this.foto== "null"){
-      this.imgUrl="../assets/img/gabino.jpg";
-    }else{
-      this.imgUrl= this.global.assetsRoot+this.foto;
-    }
-
-
-    if(active == "Si")
-    {
-      this.desBut = true;
-      this.actBut= false;
-    }
-    else{
-      if (active == "No") {
-        this.desBut = false;
-        this.actBut= true;
-      }
-    }
-  }
+  
 }
