@@ -25,6 +25,7 @@ export const ROUTES: RouteInfo[] = [
 export const ROUTES2: RouteInfo2[] = [
     { path: 'proyectos', title: 'Proyectos',  icon:'files_single-copy-04', class: '' },
     { path: 'certificaciones', title: 'Certificaciones',  icon:'education_agenda-bookmark', class: '' },
+    { path: 'equipoSeguridad', title: 'Equipo de Seguridad',  icon:'ui-2_settings-90', class: '' },
 
    //{ path: 'tipos-de-herramienta', title: 'Tipos de Herramienta',  icon:'now-ui-icons ui-2_settings-90', class: '' },
    //{ path: 'herramientas', title: 'Herramienta',  icon:'now-ui-icons ui-2_settings-90', class: '' },

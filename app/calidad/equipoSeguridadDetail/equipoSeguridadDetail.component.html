@@ -1,0 +1,142 @@
+<div [ngClass]="{'loading':true ,'loading-visible': cargando != 0 }">
+  <div class="loader-container">
+      <i class="now-ui-icons loader_refresh spin"></i> 
+  </div>
+</div>
+
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">
+            <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaHerramientas();"></i>
+            Equipo de Seguridad {{this.certificacionesForm.getRawValue().certificacion}}
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()"  [formGroup]=certificacionesForm #formDir="ngForm">
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="id_certificaciones">Ctrl</label>
+                  <input type="text" id="id_certificaciones" class="form-control" placeholder="" formControlName="id_certificaciones">
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="certificacion">Nombre</label>
+                  <input type="text" id="certificacion" class="form-control" required placeholder="Nombre" formControlName="certificacion">
+                </div>
+                <div *ngIf="certificacion.invalid && (certificacion.dirty || certificacion.touched)" class="alert alert-danger">
+                  <div *ngIf="certificacion.errors.required">
+                    Nombre requerido.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="diasValidos">Dias v&aacute;lidos</label>
+                  <input type="text" id="diasValidos" class="form-control" required placeholder="" formControlName="diasValidos">
+                </div>
+                <div *ngIf="diasValidos.invalid && (diasValidos.dirty || diasValidos.touched)" class="alert alert-danger">
+                  <div *ngIf="diasValidos.errors.required">
+                    Este campo es requerido requerido.
+                  </div>
+                  <div *ngIf="diasValidos.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="aprobable">¿Requiere aprobaci&oacute;n?</label>
+                  <select class="form-control"  id="aprobable" required name="id_concretera" formControlName="aprobable" >
+                    <option value=""  selected >Selecciona...</option>
+                    <option value="0"  >No</option>
+                    <option value="1"  >Si</option>                   
+                  </select>                
+                </div>
+                <div *ngIf="aprobable.invalid && (aprobable.dirty || aprobable.touched)" class="alert alert-danger">
+                  <div *ngIf="aprobable.errors.required">
+                    Este campo es requerido requerido.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="diasAmarillos">Dias amarillos</label>
+                  <input type="text" id="diasAmarillos" class="form-control" placeholder="Dias amarillos" required formControlName="diasAmarillos">
+                </div>
+                <div *ngIf="diasAmarillos.invalid && (diasAmarillos.dirty || diasAmarillos.touched)" class="alert alert-danger">
+                  <div *ngIf="diasAmarillos.errors.required">
+                    Dias amarillos requeridos.
+                  </div>
+                  <div *ngIf="diasAmarillos.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="diasRojos">Dias rojos</label>
+                  <input type="text" id="diasRojos" class="form-control" placeholder="Nombre" required formControlName="diasRojos">
+                </div>
+                <div *ngIf="diasRojos.invalid && (diasRojos.dirty || diasRojos.touched)" class="alert alert-danger">
+                  <div *ngIf="diasRojos.errors.required">
+                    Dias rojos requeridos.
+                  </div>
+                  <div *ngIf="diasRojos.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 col-12">
+                <div class="form-group">
+                  <label for="descripcion">Descrioci&oacute;n</label>
+                  <textarea type="text" id="descripcion" required class="form-control" formControlName="descripcion"> </textarea>
+                </div>
+                <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)" class="alert alert-danger">
+                  <div *ngIf="descripcion.errors.required">
+                    Descrioci&oacute;n requerida.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group"  style="float: right; padding-right: 10%;">
+              <button class="btn btn-info" *ngIf="hidden == true"  (click)="mostrar()">
+                <span><b> Cambiar Datos. </b></span>
+              </button>
+              <button class="btn btn-success" *ngIf="!hidden" [disabled]="certificacionesForm.invalid" (click)="actualizarCertificacion();">
+                <span><b> Guardar Cambios. </b></span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card">
+        <div class="image">
+          <img src="../assets/img/Labo.jpg" alt="...">
+        </div>
+        <div class="card-body">
+          <div class="author">
+            <div class="col-md-6 ml-auto mr-auto">
+              <button type="button" class="btn btn-danger btn-round " (click)="desactivarHerramienta()" *ngIf="desBut">Desactivar</button>
+              <button type="button" class="btn btn-success btn-round " (click)="activarHerramienta()" *ngIf="actBut">Activar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

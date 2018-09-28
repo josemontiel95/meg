@@ -18,6 +18,9 @@ import { CrearTipoHerramientasComponent } from '../../calidad/crear-tipo-de-herr
 import { TipoHerramientaDetailComponent } from '../../calidad/tipo-de-herramienta-detail/tipo-de-herramienta-detail.component';
 import { InsertarDocumentoComponent } from '../../calidad/insertar-documento/insertar-documento.component';
 
+import { EquipoSeguridadComponent } from '../../calidad/equipoSeguridad/equipoSeguridad.component';
+import { CrearEquipoSeguridadComponent } from '../../calidad/crearEquipoSeguridad/crearEquipoSeguridad.component';
+import { EquipoSeguridadDetailComponent } from '../../calidad/equipoSeguridadDetail/equipoSeguridadDetail.component';
 
 export const CalidadLayoutRoutes: Routes = [
     { path: '',      		  redirectTo: 'user-profile', pathMatch: 'full' },
@@ -43,5 +46,9 @@ export const CalidadLayoutRoutes: Routes = [
     { path: 'certificaciones',  component: TiposDeHerramientaComponent },
     { path: 'certificaciones/crea-certificacion',  component: CrearTipoHerramientasComponent },
     { path: 'certificaciones/certificacion-detail/:id',  component: TipoHerramientaDetailComponent },
+
+    { path: 'equipoSeguridad',  component: EquipoSeguridadComponent },
+    { path: 'equipoSeguridad/creaEquipoSeguridad',  component: CrearEquipoSeguridadComponent },
+    { path: 'equipoSeguridad/equipoSeguridadDetail/:id',  component: EquipoSeguridadDetailComponent },
 
 ];
