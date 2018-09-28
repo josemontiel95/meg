@@ -11,6 +11,7 @@ import { ObrasComponent } from '../../calidad/obras/obras.component';
 import { HerramientasComponent } from '../../calidad/herramientas/herramientas.component';
 import { CrearHerramientasComponent } from '../../calidad/crear-herramientas/crear-herramientas.component';
 import { HerramientaDetailComponent } from '../../calidad/herramienta-detail/herramienta-detail.component';
+import { SalonUsuarioDetailComponent } from '../../calidad/salon-user-detail/salon-user-detail.component';
 
 
 import { TiposDeHerramientaComponent } from '../../calidad/tipos-de-herramienta/tipos-de-herramienta.component';
@@ -33,6 +34,7 @@ export const CalidadLayoutRoutes: Routes = [
 
     { path: 'salones',  component: HerramientasComponent },
     { path: 'salones/salon-detail/:id',   component: HerramientaDetailComponent },
+    { path: 'salones/salon-user-detail/:id',   component: SalonUsuarioDetailComponent },
     { path: 'salones/crear-salon',  component: CrearHerramientasComponent },
 
     { path: 'insertar-documento/:id/:id2',   component: InsertarDocumentoComponent },

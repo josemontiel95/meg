@@ -29,6 +29,7 @@ import { InsertarDocumentoComponent } from '../../calidad/insertar-documento/ins
 import { CertificacionesGridComponent } from '../../calidad/gridsUsersList/certificaciones-grid/certificaciones-grid.component';
 import { ProyectosGridComponentP } from '../../calidad/gridsUserProfile/proyectos-grid/proyectos-grid.component';
 import { EquipoGridComponentP } from '../../calidad/gridsUserProfile/equipo-grid/equipo-grid.component';
+import { SalonUsuarioDetailComponent } from '../../calidad/salon-user-detail/salon-user-detail.component';
 
 @NgModule({
   imports: [
@@ -63,7 +64,8 @@ import { EquipoGridComponentP } from '../../calidad/gridsUserProfile/equipo-grid
     InsertarDocumentoComponent,
     CertificacionesGridComponent,
     ProyectosGridComponentP,
-    EquipoGridComponentP
+    EquipoGridComponentP,
+    SalonUsuarioDetailComponent
 
   ]
 })

@@ -4,7 +4,6 @@ import { DataService } from "../../data.service";
 import { LoginResp } from "../../interfaces/int.LoginResp";
 import { Global } from "../../interfaces/int.Global";
 import { Router, ActivatedRoute } from '@angular/router';
-import { Herramienta }    from './herramienta';
 import {
     ReactiveFormsModule,
     FormsModule,
@@ -16,11 +15,11 @@ import {
 
 
 @Component({
-  selector: 'app-herramienta-detail',
-  templateUrl: './herramienta-detail.component.html',
-  styleUrls: ['./herramienta-detail.component.css','../../loadingArrows.css']
+  selector: 'app-salonuser-detail',
+  templateUrl: './salon-user-detail.component.html',
+  styleUrls: ['./salon-user-detail.component.css','../../loadingArrows.css']
 })
-export class HerramientaDetailComponent implements OnInit {
+export class SalonUsuarioDetailComponent implements OnInit {
 
     estatus: string;
     error: string;
