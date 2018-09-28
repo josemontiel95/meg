@@ -29,6 +29,7 @@ import { InsertarDocumentoComponent } from '../../calidad/insertar-documento/ins
 import { CertificacionesGridComponent } from '../../calidad/gridsUsersList/certificaciones-grid/certificaciones-grid.component';
 import { ProyectosGridComponentP } from '../../calidad/gridsUserProfile/proyectos-grid/proyectos-grid.component';
 import { EquipoGridComponentP } from '../../calidad/gridsUserProfile/equipo-grid/equipo-grid.component';
+import { SalonUsuarioDetailComponent } from '../../calidad/salon-user-detail/salon-user-detail.component';
 import { EquipoSeguridadComponent } from '../../calidad/equipoSeguridad/equipoSeguridad.component';
 import { CrearEquipoSeguridadComponent } from '../../calidad/crearEquipoSeguridad/crearEquipoSeguridad.component';
 import { EquipoSeguridadDetailComponent } from '../../calidad/equipoSeguridadDetail/equipoSeguridadDetail.component';
@@ -66,6 +67,7 @@ import { EquipoSeguridadDetailComponent } from '../../calidad/equipoSeguridadDet
     CertificacionesGridComponent,
     ProyectosGridComponentP,
     EquipoGridComponentP,
+    SalonUsuarioDetailComponent,
     EquipoSeguridadComponent,
     CrearEquipoSeguridadComponent,
     EquipoSeguridadDetailComponent
