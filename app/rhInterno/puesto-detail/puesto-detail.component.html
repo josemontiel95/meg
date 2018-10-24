@@ -1,0 +1,96 @@
+<div [ngClass]="{'loading':true ,'loading-visible': cargando != 0 }">
+    <div class="loader-container">
+        <i class="now-ui-icons loader_refresh spin"></i> 
+    </div>
+</div>
+
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">
+            <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaObra();"></i>
+            Puesto: {{this.puestosForm.getRawValue().puesto}}
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()"  [formGroup]=puestosForm #formDir="ngForm" > <!-- INICIO DEL FORM -->
+            <div class="row"> <!-- INICIO PRIMER ROW -->
+              <div class="col-md-12 col-12"> <!-- INICIO PRIMER CAMPO -->
+                <div class="form-group">
+                  <label for="id_puesto">Ctrl</label>
+                  <input type="text" id="id_puesto"  name="id_puesto" class="form-control" placeholder="ID" formControlName="id_puesto">
+                  <div *ngIf="id_puesto.invalid && (id_puesto.dirty || id_puesto.touched)" class="alert alert-danger">            
+                    <div *ngIf="id_puesto.errors.required">
+                      Ctrl Requerido.
+                    </div>
+                  </div>
+                </div>
+              </div><!-- FIN PRIMER CAMPO -->
+            </div>
+            <div class="row"> <!-- INICIO PRIMER ROW -->
+              <div class="col-md-12 col-12"> <!-- INICIO SEGUNDO CAMPO -->
+                <div class="form-group">
+                  <label for="puesto">Puesto</label>
+                  <input type="text" id="puesto"  required name="puesto" class="form-control" placeholder="Puesto" formControlName="puesto">
+                  <div *ngIf="puesto.invalid && (puesto.dirty || puesto.touched)" class="alert alert-danger">    
+                    <div *ngIf="puesto.errors.required">
+                      Puesto requerido.
+                    </div>
+                  </div>
+                </div>
+              </div> <!-- FIN SEGUNDO CAMPO -->  
+            </div> <!-- FIN PRIMER ROW -->
+            <div class="row"> 
+              <div class="col-md-12 col-12">
+                  <p style="color: orange">{{cargandoMessage}}<p>
+                  <p style="color: green">{{actualizarMessageCargando}}<p>
+              </div>
+            </div>
+
+            <div class="btn-group"  style="float: right; padding-right: 10%;">
+              <button class="btn btn-info" *ngIf="hidden == true"  (click)="mostrar()">
+                <span><b> Cambiar Datos. </b></span>
+              </button>
+              <button class="btn btn-success" *ngIf="!hidden" [disabled]="puestosForm.invalid" (click)="actualizarObra();">
+                <span><b> Guardar Cambios. </b></span>
+              </button>
+            </div>
+          </form> <!-- FIN DEL FORM -->
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-user">
+        <div class="image">
+          <img src="../assets/img/Labo.jpg" alt="...">
+        </div>
+        <div class="card-body">
+          <div class="author">
+            <img class="avatar border-gray" src="{{this.imgUrl}}"  alt="...">
+            <h5 class="title">{{this.puestosForm.getRawValue().puesto}}</h5>
+            <p class="description">
+              {{this.puestosForm.getRawValue().id_puesto}}
+            </p>
+            <div class="btn-group">
+              <button class="btn btn-success"  *ngIf="!active"  (click)="toogleActive();">
+                <span><b>Activar</b></span>
+              </button>
+               <button class="btn btn-danger"  *ngIf="active"  (click)="toogleActive();">
+                <span><b>Desactivar</b></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="button-container">
+          <div class="font-icon-detail">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -75,7 +75,7 @@ export class InsertarDocumentoComponent implements OnInit {
       this.crearMessage=""
       this.crearMessageCargando=objeto.estatus;
       console.log(objeto);
-      setTimeout(()=>{ this.router.navigate(['administrador/usuarios/user-detail/'+this.id])}, 1500)
+      setTimeout(()=>{ this.router.navigate(['calidad/usuarios/user-detail/'+this.id])}, 1500)
        
     }else{
       this.crearMessageCargando="";

@@ -21,25 +21,31 @@ import {
 })
 export class SalonUsuarioDetailComponent implements OnInit {
 
-    estatus: string;
-    error: string;
-    historico= false;
-    cargando= 2;
-    active: any;
-    submitted = false;
-    hidden = true;
-    mis_certif: Array<any>;
-    mis_lab: Array<any>;
-    imgUrl = "";
-    condi= [{"condicion":"Muy Dañado", "id":"Muy Dañado"},{"condicion":"Dañado", "id":"Dañado"},{"condicion":"Regular", "id":"Regular"},{"condicion":"Buena", "id":"Buena"},{"condicion":"Muy Buena", "id":"Muy Buena"}];
-    onSubmit() { this.submitted = true; }
+  estatus: string;
+  error: string;
+  historico= false;
+  cargando;
+  active: any;
+  submitted = false;
+  hidden = true;
+  mis_certif: Array<any>;
+  mis_lab: Array<any>;
+  imgUrl = "";
+  onSubmit() { this.submitted = true; }
 
-  salonForm: FormGroup;
-  salon = {
-    certificacion_id: '',
-    fecha:'',
-    lugar:'',
-    capacidad:''
+  usuario_salonForm: FormGroup;
+  usuario_salon = {
+    id_usuario_salon: '',
+    nombre:'',
+    certificacion:'',
+    diasValidos:'',
+    asistencia: '',
+    asisteciaFecha: '',
+    aprobada: '',
+    aprobadaFecha: '',
+    fechaVigencia: '',
+    id_salon: '',
+    folio:''
   }
 
 
@@ -49,7 +55,25 @@ export class SalonUsuarioDetailComponent implements OnInit {
     desBut=true;
     actBut=false;
     His=true;
-    
+    qrFoto;
+    doc;
+    qrFotoIcon;
+    docIcon;
+
+    folioQR;
+    prefijo;
+    nombreQR;
+    curpNo;
+    ocupacion;
+    puesto;
+    razonSocial;
+    rfc;
+    curso;
+    horas;
+    periodoEje;
+    areaTematica;
+    capacitador;
+
     resppass= false;
     exitoCon = false;
     password1: string;
@@ -70,23 +94,8 @@ export class SalonUsuarioDetailComponent implements OnInit {
     statusTitle="";
     
   constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) {
-    this.columnDefs = [
-    {headerName: 'Ctrl', field: 'id_usuario' },
-    {headerName: 'Nombre', field: 'nombre' },
-    {headerName: 'Rol', field: 'rol' },
-    {headerName: 'Fecha CP', field: 'aprobadaFecha' },
-    {headerName: 'Ctrl Salon CP', field: 'id_salonCP' },
-    {headerName: 'Inscrito', field: 'Inscrito' },
-    {headerName: 'Aprobada', field: 'aprobada' },
-    {headerName: 'Asistencia', field: 'asistencia' },
-
-
-
-  ];
-    this.rowSelection = "single";
+    
    }
-
-   rowData: any;
 
   ngOnInit() {
     this.data.currentGlobal.subscribe(global => this.global = global);
@@ -94,34 +103,50 @@ export class SalonUsuarioDetailComponent implements OnInit {
     
     this.cargando=2;
 
-    let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
+    let url = `${this.global.apiRoot}/usuario_salones/get/endpoint.php`;
     let search = new URLSearchParams();
-    search.set('function',         'getAllForDropdown');
+    search.set('function',       'getInfoForQR');
     search.set('token',            this.global.token);
-    search.set('rol_usuario_id',   '1004');
-    this.http.get(url, {search}).subscribe(res => this.llenaCertificaciones(res.json()) );
+    search.set('rol_usuario_id',   this.global.rol);
+    search.set('id_usuario_salon', this.id);
+    this.http.get(url, {search}).subscribe(res => this.llenadoQRInfo(res.json()) );
 
-    url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
+    url = `${this.global.apiRoot}/usuario_salones/get/endpoint.php`;
 	  search = new URLSearchParams();
-	  search.set('function',       'getSalonesByIDCalidad');
-    search.set('token',          this.global.token);
-    search.set('rol_usuario_id', this.global.rol);
-    search.set('id_salon', this.id);
+	  search.set('function',       'getSalonUsuarioByIDCalidad');
+    search.set('token',            this.global.token);
+    search.set('rol_usuario_id',   this.global.rol);
+    search.set('id_usuario_salon', this.id);
 	  this.http.get(url, {search}).subscribe(res => this.llenado(res.json()) );
 
-    this.salonForm = new FormGroup({
-      'id_salon':            new FormControl({ value:this.salon.certificacion_id,  disabled: true },  [Validators.required]),         
-      'certificacion_id':    new FormControl({ value:this.salon.certificacion_id,  disabled: this.hidden },  [Validators.required]),         
-      'fecha':               new FormControl({ value:this.salon.fecha,             disabled: this.hidden },  [Validators.required]), 
-      'lugar':               new FormControl({ value:this.salon.lugar,             disabled: this.hidden },  [Validators.required]), 
-      'capacidad':           new FormControl({ value:this.salon.capacidad,         disabled: this.hidden },  [Validators.required, Validators.pattern("^([0-9])*")])
+    this.usuario_salonForm = new FormGroup({
+      'id_usuario_salon':       new FormControl({ value:this.usuario_salon.id_usuario_salon,     disabled: this.hidden },  [Validators.required]),         
+      'nombre':                 new FormControl({ value:this.usuario_salon.nombre,               disabled: this.hidden },  [Validators.required]), 
+      'certificacion':          new FormControl({ value:this.usuario_salon.certificacion,        disabled: this.hidden },  [Validators.required]), 
+      'diasValidos':            new FormControl({ value:this.usuario_salon.diasValidos,          disabled: this.hidden },  [Validators.required]),
+      'asistencia':             new FormControl({ value:this.usuario_salon.asistencia,           disabled: this.hidden },  [Validators.required]),         
+      'asisteciaFecha':         new FormControl({ value:this.usuario_salon.asisteciaFecha,       disabled: this.hidden },  [Validators.required]), 
+      'aprobada':               new FormControl({ value:this.usuario_salon.aprobada,             disabled: this.hidden },  [Validators.required]), 
+      'aprobadaFecha':          new FormControl({ value:this.usuario_salon.aprobadaFecha,        disabled: this.hidden },  [Validators.required]),
+      'fechaVigencia':          new FormControl({ value:this.usuario_salon.fechaVigencia,        disabled: this.hidden },  [Validators.required]), 
+      'id_salon':               new FormControl({ value:this.usuario_salon.id_salon,             disabled: this.hidden },  [Validators.required]),
+      'folio':                  new FormControl({ value:this.usuario_salon.folio,                disabled: this.hidden },  [Validators.required])
+      
     });
   }
-  get id_salon() { return this.salonForm.get('certificacion_id'); }
-  get certificacion_id() { return this.salonForm.get('certificacion_id'); }
-  get fecha()            { return this.salonForm.get('fecha'); }
-  get lugar()            { return this.salonForm.get('lugar'); }
-  get capacidad()        { return this.salonForm.get('capacidad'); }
+  get id_usuario_salon() { return this.usuario_salonForm.get('id_usuario_salon'); }
+  get nombre()           { return this.usuario_salonForm.get('nombre'); }
+  get certificacion()    { return this.usuario_salonForm.get('certificacion'); }
+  get diasValidos()      { return this.usuario_salonForm.get('diasValidos'); }
+  get asistencia()       { return this.usuario_salonForm.get('asistencia'); }
+  get asisteciaFecha()   { return this.usuario_salonForm.get('asisteciaFecha'); }
+  get aprobada()         { return this.usuario_salonForm.get('aprobada'); }
+  get aprobadaFecha()    { return this.usuario_salonForm.get('aprobadaFecha'); }
+  get fechaVigencia()    { return this.usuario_salonForm.get('fechaVigencia'); }
+  get id_salon()         { return this.usuario_salonForm.get('id_salon'); }
+  get folio()            { return this.usuario_salonForm.get('folio'); }
+
+
 
   switchAlerta(exitoCon: any){
     this.exitoCon = false;
@@ -137,33 +162,30 @@ export class SalonUsuarioDetailComponent implements OnInit {
     this.hidden = !this.hidden;
     const state = this.hidden ? 'disable' : 'enable';
 
-    Object.keys(this.salonForm.controls).forEach((controlName) => {
-        this.salonForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
+    Object.keys(this.usuario_salonForm.controls).forEach((controlName) => {
+        this.usuario_salonForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
     });
-    this.salonForm.controls['id_salon']['disable']();
+    this.usuario_salonForm.controls['id_salon']['disable']();
   }
 
-  actualizarSalon(){
-    this.cargando=1;
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    formData.append('function',          'upDateSalonCalidad');
-    formData.append('token',             this.global.token);
-    formData.append('rol_usuario_id',    this.global.rol);
+  llenadoQRInfo(resp){
+    this.cargando=this.cargando-1;
+    console.log(resp);
 
-    formData.append('id_salon',          this.id);
-    formData.append('certificacion_id',  this.salonForm.value.certificacion_id);
-    formData.append('fecha',             this.salonForm.value.fecha);  
-    formData.append('lugar',             this.salonForm.value.lugar);
-    formData.append('capacidad',         this.salonForm.value.capacidad);
-    //post  formData
-    this.http.post(url, formData).subscribe(res =>  {
-                                              this.respuestaError(res.json());
-                                            } );
+      this.folioQR = resp.folio;
+      this.prefijo = resp.prefijo;
+      this.nombreQR= resp.nombre;
+      this.curpNo = resp.curpNo;
+      this.ocupacion = resp.ocupacion;
+      this.puesto = resp.puesto;
+      this.razonSocial = resp.razonSocial;
+      this.rfc = resp.rfc;
+      this.curso = resp.curso;
+      this.horas = resp.hrs;
+      this.periodoEje = resp.periodoEjecucion;
+      this.areaTematica = resp.areaTematica;
+      this.capacitador = resp.capacitador;
   }
-
-
   respuestaError(resp: any){
     this.cargando=this.cargando-1;
     console.log(resp);
@@ -180,38 +202,34 @@ export class SalonUsuarioDetailComponent implements OnInit {
   llenado(respuesta: any){
     console.log(respuesta);
 
-    this.salonForm.patchValue({
-      id_salon: respuesta.id_salon,
-      certificacion_id: respuesta.certificacion_id,
-      fecha: respuesta.fecha,
-      lugar: respuesta.lugar,
-      capacidad: respuesta.capacidad
+    this.usuario_salonForm.patchValue({
+      id_usuario_salon:respuesta.id_usuario_salon,
+      nombre:          respuesta.nombre,
+      certificacion:   respuesta.certificacion,
+      diasValidos:     respuesta.diasValidos,
+      asistencia:      respuesta.asistencia,
+      asisteciaFecha:  respuesta.asisteciaFecha,
+      aprobada:        respuesta.aprobada,
+      aprobadaFecha:   respuesta.aprobadaFecha,
+      fechaVigencia:   respuesta.fechaVigencia,
+      id_salon:        respuesta.id_salon,
+      folio:           respuesta.folio
     });
-    this.statusSalon=respuesta.status;
-    switch(respuesta.status){
-      case '0':
-        this.abiertos=true;
-        this.statusTitle="Salon abierto, puedes inscribir o eliminar empleados"
-      break;
-      case '1':
-        this.cerrados=true;
-        this.statusTitle="Salon cerrado, puedes ver pero ya no modificar. Da click en habilitar el calificador"
+    this.qrFoto =  respuesta.qrFoto;
+    this.doc    =  respuesta.doc;
 
-      break;
-      case '2':
-        this.calificando=true;
-        this.statusTitle="Puedes ahora completar el salon"
-
-      break;
-      case '3':
-        this.completados=true;
-        this.statusTitle="Salon completado, puedes ver pero ya no modificar"
-      break;
-      default:
-        window.alert(respuesta.status);
-      break;
+    if(this.qrFoto=="null"){
+      this.qrFotoIcon = "assets/img/missing.png";
+    }else{
+      this.qrFotoIcon =this.global.assetsRoot+this.qrFoto;
     }
 
+    if(this.doc=="null"){
+      this.docIcon = "assets/img/missing.png";
+    }else{
+      this.docIcon = "assets/img/doc.png";
+    }
+    
    this.active= respuesta.active;
    this.status(this.active);
    this.cargando=this.cargando-1;
@@ -220,20 +238,26 @@ export class SalonUsuarioDetailComponent implements OnInit {
   }
  
 
-  status(active: any)
-  {
+  status(active: any){
     if (active == 1) {
      this.actBut = false;
      this.desBut = true;
-          }
-     else
-     {
+    }else{
      this.actBut= true;
      this.desBut= false;
-     }     
-
+    }
+  }
+  abrirDoc(){
+    if(this.doc=="null"){
+      window.alert("No existe archivo para este empleado");
+    }else{
+      window.open(this.global.assetsRoot+this.doc, "_blank");
+    }
   }
 
+  subirDoc(docNo: any ){
+    this.router.navigate(['calidad/insertar-comprobanteQR/'+this.id+'/'+docNo]);
+  }
 
   desactivarHerramienta(){
      this.actBut= true;
@@ -298,314 +322,5 @@ export class SalonUsuarioDetailComponent implements OnInit {
        //location.reload();
      }
    }
-   llenaCertificaciones(resp: any){
-    console.log(resp);
-    this.mis_certif= new Array(resp.length);
-    for (var _i = 0; _i < resp.length; _i++ )
-    {
-      this.mis_certif[_i]=resp[_i];
-    }
-    this.cargando=this.cargando-1;
-    console.log("llenaTipos this.cargando: "+this.cargando);
-  }
 
-
-   onGridReady(params) {
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-
-    let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
-    let search = new URLSearchParams();
-    search.set('function',           'getInscritosPorSalon');
-    search.set('token',              this.global.token);
-    search.set('rol_usuario_id',     this.global.rol);
-    search.set('id_salon',           this.id);
-    this.http.get(url, {search}).subscribe(res => {
-                                            console.log(res.json());
-                                            this.rowData= res.json();
-                                            this.gridApi.sizeColumnsToFit();
-                                          });
-  }
-  mostrarInscritos(){
-    this.historico=false;
-    this.cargando=this.cargando+1
-    let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
-    let search = new URLSearchParams();
-    search.set('function',           'getInscritosPorSalon');
-    search.set('token',              this.global.token);
-    search.set('rol_usuario_id',     this.global.rol);
-    search.set('id_salon',           this.id);
-    this.http.get(url, {search}).subscribe(res => {
-                                            console.log(res.json());
-                                            this.respRelodMainGrid(res.json());
-
-                                          });
-  }
-  mostrarTodos(){
-    this.historico=true;
-    this.cargando=1
-    let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
-    let search = new URLSearchParams();
-    search.set('function',           'getFullPorSalon');
-    search.set('token',              this.global.token);
-    search.set('rol_usuario_id',     this.global.rol);
-    search.set('id_salon',           this.id);
-    this.http.get(url, {search}).subscribe(res => {
-                                            console.log(res.json());
-                                            this.respRelodMainGrid(res.json());
-                                          });
-  }
-  respRelodMainGrid(res: any){
-    this.cargando=this.cargando-1;
-    console.log(res);
-    if(res.registros==0){
-        this.rowData="";
-    }else{
-      this.gridApi.sizeColumnsToFit();
-      this.rowData= res;
-    }
-  }
-  onSelectionChanged(event: EventListenerObject){
-    var selectedRows = this.gridApi.getSelectedRows();
-    var id = "";
-    var inscrito = "";
-    var id_usuario_salon = "";
-
-    selectedRows.forEach(function(selectedRow, index) {
-      id = selectedRow.id_usuario;
-      inscrito = selectedRow.Inscrito;
-      id_usuario_salon = selectedRow.id_usuario_salon;
-    });
-
-    if(this.historico){
-      if(inscrito == "Si"){
-        if(window.confirm("¿Estas seguro que quieres desasignar a este empleado de este salon?")){
-          this.eliminarInscripcion(id_usuario_salon);
-        }else{
-        }
-      }else{
-        if(window.confirm("¿Estas seguro que quieres inscribir a este empleado a este salon?")){
-          this.inscribir(id);
-        }else{
-        }
-      }
-    }else{
-      switch(this.statusSalon){
-        case '0':
-        break;
-        case '1':
-          this.paseLista(id_usuario_salon);
-        break;
-        case '2':
-          // Calificar
-          this.calificar(id_usuario_salon);
-        break;
-        case '3':
-          window.alert("En este momento podrias ver la tarjeta de la certificacion individual, subir foto/PDF del docuemnto que respalda.");
-          // Visualizar Certificacion 
-        break;
-        default:
-          window.alert("Error");
-        break;
-      }
-
-      //this.router.navigate(['calidad/salones/salon-detail/'+id]);
-    }
-  }
-  calificar(id_usuario_salon){
-    let asistencia=this.falta ? '0' : '1';
-    this.cargando=1;
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    formData.append('function',          'calificar');
-    formData.append('token',             this.global.token);
-    formData.append('rol_usuario_id',    this.global.rol);
-    formData.append('asistencia',        asistencia);
-    formData.append('id_usuario_salon',  id_usuario_salon);
-
-    this.http.post(url, formData).subscribe(res =>  {
-      this.respuestaCalificar(res.json());
-    } );
-  }
-  respuestaCalificar(res){
-    this.cargando=this.cargando-1;
-    if(res.error!=0){
-      window.alert(res.estatus);
-      location.reload();
-    }else{
-      //reloadGrid
-     this.mostrarInscritos();
-    }
-  }
-  paseLista(id_usuario_salon){
-    let asistencia=this.falta ? '0' : '1';
-    this.cargando=1;
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    formData.append('function',          'paseLista');
-    formData.append('token',             this.global.token);
-    formData.append('rol_usuario_id',    this.global.rol);
-
-    formData.append('asistencia',        asistencia);
-    formData.append('id_usuario_salon',  id_usuario_salon);
-
-    this.http.post(url, formData).subscribe(res =>  {
-      this.respuestaPaseLista(res.json());
-    } );
-  }
-  respuestaPaseLista(res){
-    this.cargando=this.cargando-1;
-    if(res.error!=0){
-      window.alert(res.estatus);
-      location.reload();
-    }else{
-      //reloadGrid
-     this.mostrarInscritos();
-    }
-  }
-
-  eliminarInscripcion(id_usuario_salon){
-    this.cargando=1;
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    formData.append('function',          'eliminarInscripcion');
-    formData.append('token',             this.global.token);
-    formData.append('rol_usuario_id',    this.global.rol);
-
-    formData.append('id_usuario_salon',  id_usuario_salon);
-
-    this.http.post(url, formData).subscribe(res =>  {
-      this.respuestaEliminarInscripcion(res.json());
-    } );
-  }
-  inscribir(id_usuario){
-    this.cargando=1;
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    formData.append('function',          'inscribir');
-    formData.append('token',             this.global.token);
-    formData.append('rol_usuario_id',    this.global.rol);
-
-    formData.append('id_usuario',        id_usuario);
-    formData.append('id_salon',          this.id);
-    this.http.post(url, formData).subscribe(res =>  {
-      this.respuestaInscribir(res.json());
-    } );
-
-  }
-
-  respuestaEliminarInscripcion(res){
-    this.cargando=this.cargando-1;
-    if(res.error!=0){
-      window.alert(res.estatus);
-      location.reload();
-    }else{
-      //reloadGrid
-     this.mostrarInscritos();
-    }
-  }
-  respuestaInscribir(res){
-    this.cargando=this.cargando-1;
-    if(res.error!=0){
-      window.alert(res.estatus);
-      location.reload();
-    }else{
-      //reloadGrid
-     this.mostrarInscritos();
-    }
-  }
-
-  moveUp(){
-    var selectedRows = this.gridApi.getSelectedRows();
-    var flag=false;
-    switch(this.statusSalon){
-      case '0':
-          this.mostrarInscritos();
-      break;
-      case '1':
-        selectedRows.forEach(function(selectedRow, index) {
-          if(!(selectedRow.asistenciaNo==1 || selectedRow.asistenciaNo==0)){
-            flag=true;
-          }
-        });
-      break;
-      case '2':
-      break;
-    }
-    if(flag){
-      window.alert("Todos deben pasar lista.");
-      return;
-    }
-    this.cargando=this.cargando+1;
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    formData.append('function',          'moveUp');
-    formData.append('token',             this.global.token);
-    formData.append('rol_usuario_id',    this.global.rol);
-
-    formData.append('id_salon',          this.id);
-    this.http.post(url, formData).subscribe(res =>  {
-      this.respuestaMoveUp(res.json());
-    } );
-  }
-  respuestaMoveUp(res){
-    this.cargando=this.cargando-1;
-    if(res.error!=0){
-      window.alert(res.estatus);
-      location.reload();
-    }else{
-      //reloadGrid
-     this.reloadData();
-    }  
-  }
-  reloadData(){
-    this.cargando=this.cargando+1;
-    let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
-    let search = new URLSearchParams();
-    search.set('function',       'getSalonesByIDCalidad');
-    search.set('token',          this.global.token);
-    search.set('rol_usuario_id', this.global.rol);
-    search.set('id_salon', this.id);
-    this.http.get(url, {search}).subscribe(res => {
-      this.llenado(res.json()); 
-    });
-    this.niegaTodo();
-  }
-   niegaTodo(){
-    this.abiertos = false;
-    this.cerrados = false;
-    this.calificando = false;
-    this.completados = false;
-  }
-
-  completeSalon(){
-    this.cargando=this.cargando+1;
-    this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
-    let formData:FormData = new FormData();
-    formData.append('function',          'completeSalon');
-    formData.append('token',             this.global.token);
-    formData.append('rol_usuario_id',    this.global.rol);
-
-    formData.append('id_salon',          this.id);
-    this.http.post(url, formData).subscribe(res =>  {
-      this.respuestaCompleteSalon(res.json());
-    } );
-  }
-  respuestaCompleteSalon(res){
-    this.cargando=this.cargando-1;
-    if(res.error!=0){
-      window.alert(res.estatus);
-      location.reload();
-    }else{
-      //reloadGrid
-     this.reloadData();
-    }  
-  }
 }

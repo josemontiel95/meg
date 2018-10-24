@@ -41,13 +41,13 @@ export class InsertarFotoComponent implements OnInit {
 	 	formData.append('uploadFile', this.fileToUpload, this.fileToUpload.name);
     formData.append('function', 'upLoadFoto');
     formData.append('token', this.global.token);
-    formData.append('rol_usuario_id', '1001');
+    formData.append('rol_usuario_id', '1002');
     formData.append('id_usuario', this.id);
 	 	console.log(formData);
     let search = new HttpParams();
     search.set('function', 'upLoadFoto');
     search.set('token', this.global.token);
-    search.set('rol_usuario_id', '1001');
+    search.set('rol_usuario_id', '1002');
     search.set('id_usuario', this.id);
     this.crearMessageCargando="Cargando...";
 		this.http.post(url, formData, { params: search, reportProgress: true, observe: 'events'})
@@ -72,7 +72,7 @@ export class InsertarFotoComponent implements OnInit {
       this.crearMessage=""
       this.crearMessageCargando=objeto.estatus;
       console.log(objeto);
-      setTimeout(()=>{ this.router.navigate(['administrador/usuarios'])}, 1500)
+      setTimeout(()=>{ this.router.navigate(['recursosHumanos/usuarios'])}, 1500)
        
     }else{
       this.crearMessageCargando="";

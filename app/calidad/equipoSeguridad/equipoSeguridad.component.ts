@@ -18,7 +18,16 @@ export class EquipoSeguridadComponent implements OnInit{
   columnDefs;
   cargando;
   historico= false;
+  hidden=false;
   rowClassRules;
+  nombreResponsable;
+  nombre;
+  noDeEmpleado;
+  id;
+  imgUrl;
+  id_usuario;
+  noDeSerie;
+  viewProfile= false;
 
   constructor(private http: Http, private router: Router, private data: DataService, private route: ActivatedRoute){
     this.columnDefs = [
@@ -26,20 +35,29 @@ export class EquipoSeguridadComponent implements OnInit{
     {headerName: 'Nombre', field: 'nombre' },
     {headerName: 'No. Serie', field: 'noDeSerie' },
     {headerName: 'Fecha Fabricaci&oacute;n', field: 'fechaDeFrabricacion'},
+    {headerName: 'Fecha Vigencia', field: 'fechaVigencia' },
     {headerName: 'Costo', field: 'costo' },
-    {headerName: 'D&iacute;as Validos', field: 'diasValidos' },
-    {headerName: 'D&iacute;as Amarillos', field: 'diasAmarillos'},
-    {headerName: 'D&iacute;as Rojos', field: 'diasRojos' }
+    {headerName: 'Estado', field: 'estado' },
+    {headerName: 'N.D.E', field: 'noDeEmpleado' },
+    {headerName: 'Asignaci&oacute;n', field: 'estadoEsE'},
   ];
     this.rowSelection = "single";
     this.rowClassRules = {
-      "row-red-warning": function(params) {
+      "row-green-warning": function(params) {
         var color = params.data.color;
         return color == 0;
       },
-      "row-green-warning": function(params) {
+      "row-yelloy-warning": function(params) {
         var color = params.data.color;
         return color == 1;
+      },
+      "row-orange-warning": function(params) {
+        var color = params.data.color;
+        return color == 2;
+      },
+      "row-red-warning": function(params) {
+        var color = params.data.color;
+        return color == 3;
       }
     };
   }
@@ -53,6 +71,13 @@ export class EquipoSeguridadComponent implements OnInit{
 
   crearEquipoSeguridad(){
     this.router.navigate(['calidad/equipoSeguridad/creaEquipoSeguridad/']);
+  }
+  crearLoteEquipoSeguridad(){
+    this.router.navigate(['calidad/equipoSeguridad/creaEquipoSeguridadLote/']);
+  }
+
+  menosDetalles(){
+    this.hidden=false;
   }
 
   onGridReady(params) {
@@ -109,12 +134,53 @@ export class EquipoSeguridadComponent implements OnInit{
   onSelectionChanged(event: EventListenerObject){
     var selectedRows = this.gridApi.getSelectedRows();
     var id = "";
+    var id_usuario = "";
+    var nombreResponsable = "";
+    var nombre ="";
+    var noDeEmpleado ="";
+    var isAssigned="";
+    var noDeSerie="";
 
     selectedRows.forEach(function(selectedRow, index) {
-      id += selectedRow.id_equipoDeSeguridad;
-      
+      id =                 selectedRow.id_equipoDeSeguridad;
+      id_usuario =         selectedRow.id_usuario;
+      nombreResponsable =  selectedRow.nombreResponsable;
+      nombre =             selectedRow.nombre;
+      noDeEmpleado =       selectedRow.noDeEmpleado;
+      isAssigned =         selectedRow.isAssigned;
+      noDeSerie =          selectedRow.noDeSerie;
+       
     });
-    this.router.navigate(['calidad/equipoSeguridad/equipoSeguridadDetail/'+id]);
+    this.displayShortDescription(id, nombre, nombreResponsable, noDeEmpleado, isAssigned,id_usuario, noDeSerie );
+    //this.router.navigate(['calidad/equipoSeguridad/equipoSeguridadDetail/'+id]);
+
+  }
+
+  displayShortDescription(id, nombre, nombreResponsable, noDeEmpleado, isAssigned, id_usuario, noDeSerie){
+    this.hidden=true;
+    //activar 
+    this.id=id;
+    this.nombreResponsable=nombreResponsable;
+    this.nombre=nombre;
+    this.noDeEmpleado=noDeEmpleado;
+    this.id_usuario=id_usuario;
+    this.imgUrl="../assets/img/gabino.jpg";
+    this.noDeSerie=noDeSerie;
+
+    if(isAssigned == 1){
+      this.viewProfile=true;
+    }
+    else{
+      if (isAssigned == 0) {
+        this.viewProfile=false;
+      }
+    }
+  }
+  verPerfil(){
+    this.router.navigate(['calidad/usuarios/user-detail/'+this.id_usuario]);
+  }
+  detalleUsuario(){
+    this.router.navigate(['calidad/equipoSeguridad/equipoSeguridadDetail/'+this.id]);
   }
 
 }

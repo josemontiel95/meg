@@ -37,6 +37,7 @@ export class CrearUsuarioComponent implements OnInit
     hidden = true;
     mis_roles: Array<any>;
     mis_lab: Array<any>;
+    mis_puestos: Array<any>;
     mis_emp;
     mis_pm;
     cargando;
@@ -56,9 +57,12 @@ export class CrearUsuarioComponent implements OnInit
             curpNo: '',
             rfcNo: '',
             imssNo: '',
-            pm_id: '',
-            empresa_id: '',
+            pm_id: 'NULL',
+            empresa_id: 'NULL',
             tipo: '',
+            puesto_id: 'NULL',
+            noDeEmpleado: '',
+            fechaInicio: ''
           };
 
 
@@ -87,6 +91,14 @@ export class CrearUsuarioComponent implements OnInit
     search.set('token',             this.global.token);
     search.set('rol_usuario_id',    this.global.rol);
     this.http.get(url, {search}).subscribe(res => {this.llenaEmpresas(res.json());
+                                                 }); 
+
+    url = `${this.global.apiRoot}/puesto/get/endpoint.php`;
+    search = new URLSearchParams();
+    search.set('function',          'getForDroptdown');
+    search.set('token',             this.global.token);
+    search.set('rol_usuario_id',    this.global.rol);
+    this.http.get(url, {search}).subscribe(res => {this.llenaPuestos(res.json());
                                                  });
 
     url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
@@ -101,15 +113,19 @@ export class CrearUsuarioComponent implements OnInit
       'rol_usuario_id':      new FormControl( { value:this.Usuario.rol_usuario_id,   disabled: this.hidden },  [Validators.required]), 
       'nombre':              new FormControl( { value:this.Usuario.nombre,           disabled: this.hidden },  [Validators.required]), 
       'apellido':            new FormControl( { value:this.Usuario.apellido,         disabled: this.hidden },  [Validators.required]), 
-      'emailPersonal':       new FormControl( { value:this.Usuario.emailPersonal,    disabled: this.hidden },  [Validators.required, Validators.pattern("[^ @]*@[^ @]*")]), 
+      'emailPersonal':       new FormControl( { value:this.Usuario.emailPersonal,    disabled: this.hidden },  [Validators.pattern("[^ @]*@[^ @]*")]), 
       'emailCorporativo':    new FormControl( { value:this.Usuario.emailCorporativo, disabled: this.hidden },  [Validators.required, Validators.pattern("[^ @]*@[^ @]*")]), 
       'curpNo':              new FormControl( { value:this.Usuario.curpNo,           disabled: !this.hidden},  [Validators.required, Validators.pattern("[A-Z][AEIOUX][A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[HM](AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}([A-Z]|[0-9])[0-9]")]), 
       'rfcNo':               new FormControl( { value:this.Usuario.rfcNo,            disabled: this.hidden },  [Validators.required, Validators.pattern("([A-ZÑ&]{3,4})([0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))(([A-Z]|[0-9]){2})([A]|[0-9])")]),
       'imssNo':              new FormControl( { value:this.Usuario.imssNo,           disabled: this.hidden },  [Validators.required]), 
-      'pm_id':               new FormControl( { value:this.Usuario.pm_id,            disabled: this.hidden },  [Validators.required]), 
-      'empresa_id':          new FormControl( { value:this.Usuario.empresa_id,       disabled: this.hidden },  [Validators.required]), 
-      'tipo':                new FormControl( { value:this.Usuario.tipo,             disabled: this.hidden },  [Validators.required]),
-      'contrasena':          new FormControl( { value:this.Usuario.contrasena,       disabled: this.hidden },  [Validators.required])
+      'pm_id':               new FormControl( { value:this.Usuario.pm_id,            disabled: this.hidden }), 
+      'empresa_id':          new FormControl( { value:this.Usuario.empresa_id,       disabled: this.hidden }), 
+      'tipo':                new FormControl( { value:this.Usuario.tipo,             disabled: this.hidden }),
+      'contrasena':          new FormControl( { value:this.Usuario.contrasena,       disabled: this.hidden },  [Validators.required]),
+      'puesto_id':           new FormControl( { value:this.Usuario.puesto_id,        disabled: this.hidden }), 
+      'noDeEmpleado':        new FormControl( { value:this.Usuario.noDeEmpleado,     disabled: this.hidden },  [Validators.required]),
+      'fechaInicio':         new FormControl( { value:this.Usuario.fechaInicio,     disabled: this.hidden },  [Validators.required])
+    
     });
 
   }
@@ -127,7 +143,9 @@ export class CrearUsuarioComponent implements OnInit
   get empresa_id()       { return this.userForm.get('empresa_id'); }
   get tipo()             { return this.userForm.get('tipo'); }
   get contrasena()       { return this.userForm.get('contrasena'); }
-
+  get puesto_id()        { return this.userForm.get('empresa_id'); }
+  get noDeEmpleado()     { return this.userForm.get('tipo'); }
+  get fechaInicio()      { return this.userForm.get('fechaInicio'); }
 
   rolValidator(repuesta: any){
     console.log(repuesta)
@@ -159,6 +177,16 @@ export class CrearUsuarioComponent implements OnInit
       j--;
 
     }
+  }
+  llenaPuestos(resp: any){
+    this.mis_puestos= new Array(resp.length);
+    for (var _i = 0; _i < resp.length; _i++ )
+    {
+      this.mis_puestos[_i]=resp[_i];
+
+    }
+    console.log(this.mis_puestos);
+    this.cargando=this.cargando-1;
   }
 
   llenaLaboratorio(resp: any)
@@ -203,7 +231,7 @@ export class CrearUsuarioComponent implements OnInit
         if(Number(res.rol_usuario_id)>1004){
           if(Number(res.active) == 1){
             window.alert("existe un registro para este usuario. Te redireccionaremos");
-            this.router.navigate(['administrador/usuarios/user-detail/'+res.id_usuario]);
+            this.router.navigate(['recursosHumanos/usuarios/user-detail/'+res.id_usuario]);
           }else{
             if(window.confirm("Existe un registro para este usuario pero se encuentra desactivado. Deseas activarlo?")){
               let url = `${this.global.apiRoot}/usuario/post/endpoint.php`;
@@ -255,9 +283,9 @@ export class CrearUsuarioComponent implements OnInit
     let url = `${this.global.apiRoot}/usuario/post/endpoint.php`;
     let formData:FormData = new FormData();
 
-    formData.append('function', 'insertAdmin');
+    formData.append('function', 'insertRh');
     formData.append('token', this.global.token);
-    formData.append('rol_usuario_id', '1001');
+    formData.append('rol_usuario_id', '1002');
 
     formData.append('new_rol_usuario_id',this.userForm.value.rol_usuario_id);
     formData.append('nombre',            this.userForm.value.nombre);
@@ -267,10 +295,13 @@ export class CrearUsuarioComponent implements OnInit
     formData.append('curpNo',            this.userForm.getRawValue().curpNo);
     formData.append('rfcNo',             this.userForm.value.rfcNo);
     formData.append('imssNo',            this.userForm.value.imssNo);
-    formData.append('pm_id',             this.userForm.value.pm_id);
+    formData.append('pm_id',             this.userForm.getRawValue().pm_id);
     formData.append('empresa_id',        this.userForm.value.empresa_id);
     formData.append('tipo',              this.userForm.value.tipo);
     formData.append('contrasena',        this.userForm.value.contrasena);
+    formData.append('puesto_id',         this.userForm.value.puesto_id);
+    formData.append('noDeEmpleado',      this.userForm.value.noDeEmpleado);
+    formData.append('fechaInicio',       this.userForm.value.fechaInicio);
 
     this.crearMessageCargando="Cargando...";
     this.http.post(url, formData).subscribe(res => this.diplay(res.json()) );
@@ -324,7 +355,8 @@ export class CrearUsuarioComponent implements OnInit
                                                       this.router.navigate(['login']); 
                                                     });
           break;
-
+        case 10:
+        case 11:
         case 4:
           this.crearMessage=crearResp.estatus;
           window.alert(this.crearMessage);
@@ -355,4 +387,20 @@ export class CrearUsuarioComponent implements OnInit
     this.cargando=this.cargando-1;
   }
 
+  onChangeRol(){
+    if(this.userForm.value.rol_usuario_id==1005){
+      this.userForm.patchValue({
+        pm_id:         'NULL'
+      });
+      this.userForm.controls['pm_id']['disable']();
+    }else if(this.userForm.value.rol_usuario_id==1006){
+      this.userForm.controls['pm_id']['enable']();
+    }
+  }
 }
+
+
+
+
+
+

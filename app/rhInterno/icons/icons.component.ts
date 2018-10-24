@@ -23,6 +23,7 @@ export class IconsComponent implements OnInit{
   rol= "";
   active="";
   hidden=false;
+  historial=false;
   desBut=true;
   actBut=false;
   imgUrl="";
@@ -33,38 +34,27 @@ export class IconsComponent implements OnInit{
   constructor( private http: Http, private router: Router, private data: DataService, private route: ActivatedRoute){
 	  this.columnDefs = [
       {headerName: 'Ctrl', field: 'id_usuario' },
+      {headerName: 'N.D.E.', field: 'noDeEmpleado' },
       {headerName: 'Nombre', field: 'nombre' },
       {headerName: 'Email coorporativo', field: 'emailCorporativo' },
       {headerName: 'Fecha de Nacimiento', field: 'fechaDeNac' },
+      {headerName: 'Puesto', field: 'puesto' },
       {headerName: 'Rol', field: 'rol' },
-      {headerName: 'Certificacion por vencer', field: 'certificacion'},
-      {headerName: 'Estado', field: 'estado'},
       {headerName: 'Activo', field: 'active' },
 
     ];
     this.rowSelection = "single";
     this.rowClassRules = {
-      "row-green-warning": function(params) {
+      "row-red-warning": function(params) {
         var color = params.data.color;
         return color == 0;
       },
-      "row-yelloy-warning": function(params) {
+      "row-green-warning": function(params) {
         var color = params.data.color;
         return color == 1;
-      },
-      "row-orange-warning": function(params) {
-        var color = params.data.color;
-        return color == 2;
-      },
-      "row-red-warning": function(params) {
-        var color = params.data.color;
-        return color == 3;
-      },
-      "row-blue-warning": function(params) {
-        var color = params.data.color;
-        return color == -2;
       }
     };
+
   }
 
   rowData: any;
@@ -96,26 +86,30 @@ export class IconsComponent implements OnInit{
 
     let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
     let search = new URLSearchParams();
-    search.set('function', 'getAllCalidad');
+    search.set('function', 'getAllRh');
     search.set('token', this.global.token);
+    search.set('status', '0');
     this.http.get(url, {search}).subscribe(res => {
                                             console.log(res.json());
                                             this.llenaTabla(res.json());
                                             this.gridApi.sizeColumnsToFit();
                                           });
   }
-  reloadMainGrid(){
+  quitarHistorial(){
     this.cargando=1;
+    this.historial=false;
     let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
     let search = new URLSearchParams();
-    search.set('function', 'getAllCalidad');
+    search.set('function', 'getAllRh');
     search.set('token', this.global.token);
+    search.set('status', '0');
     this.http.get(url, {search}).subscribe(res => {
       console.log(res.json());
       this.llenaTabla(res.json());
       this.gridApi.sizeColumnsToFit();
     });
   }
+  
 
   llenaTabla(repuesta: any){
     console.log(repuesta)
@@ -132,18 +126,6 @@ export class IconsComponent implements OnInit{
    menosDetalles(){
      this.hidden=false;
    }
-
-   desactivarUsuario(){
-     this.actBut= true;
-     this.desBut= false;
-     this.switchActive(0);
-  }
-
-   activarUsuario(){
-     this.actBut = false;
-     this.desBut = true;
-     this.switchActive(1);
-   }
    masOpciones(){
      this.opciones=!this.opciones;
      if(this.opciones){
@@ -152,36 +134,21 @@ export class IconsComponent implements OnInit{
        this.opcionesMessage= "Mostrar opciones"
      }
    }
-   switchActive(active: number){
-    let url = `${this.global.apiRoot}/usuario/post/endpoint.php`;
-    let formData:FormData = new FormData();
-      
-      if(active == 0){
-        formData.append('function', 'deactivate');
-      }
-      else{
-        formData.append('function', 'activate');
-      }
-        formData.append('id_usuario', this.id);
-        formData.append('rol_usuario_id', "1002");
-        formData.append('token', this.global.token);
 
-        this.http.post(url, formData).subscribe(res => {
-                                              this.respuestaSwitch(res.json());
-                                            });
-       
-   }
-
-   respuestaSwitch(res: any){
-     console.log(res);
-     if(res.error!= 0){
-       window.alert("Intentalo otra vez");
-       location.reload();
-     }
-     else{
-       location.reload();
-     }
-   }
+  cargarHistorial(){
+    this.cargando=1;
+    this.historial=true;
+    let url = `${this.global.apiRoot}/usuario/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getAllRh');
+    search.set('token', this.global.token);
+    search.set('status', '-1');
+    this.http.get(url, {search}).subscribe(res => {
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
+  }
 
 
    onSelectionChanged(event: EventListenerObject) {

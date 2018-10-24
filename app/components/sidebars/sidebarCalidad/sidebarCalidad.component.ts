@@ -19,6 +19,7 @@ export const ROUTES: RouteInfo[] = [
     { path: 'user-profile', title: 'Mi perfil',  icon:'users_circle-08', class: '' },
     //{ path: 'obras', title: 'Obras',  icon:'now-ui-icons travel_istanbul', class: '' },
     { path: 'usuarios', title: 'Usuarios',  icon:'users_single-02', class: '' },
+    { path: 'certificacionesPorUsuarioComponent', title: 'Certificaciones por usuario',  icon:'design_bullet-list-67', class: '' },
     { path: 'salones', title: 'Salones',  icon:'education_hat', class: '' },
     ];
 

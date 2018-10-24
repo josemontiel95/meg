@@ -85,14 +85,14 @@ export class CrearHerramientasComponent implements OnInit {
      location.reload();
     }
     else{
-     location.reload();
+      this.router.navigate(['calidad/salones']);
     }
   }
 
   submitted = false;
 
   regresaUsuario(){
-    this.router.navigate(['calidad/certificaciones']);
+    this.router.navigate(['calidad/salones']);
   }
 
   onSubmit() { this.submitted = true; }

@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { CalidadLayoutComponent } from './layouts/calidad-layout/calidad-layout.component';
 import { RhInternoLayoutComponent } from './layouts/rhInterno-layout/rhInterno-layout.component';
+import { ProjectManagerComponent } from './layouts/projectManager-layout/projectManager-layout.component';
 
 import { LoginComponent } from './login/login.component';
 import { AppGuard } from './app.guard';
@@ -43,6 +44,16 @@ const routes: Routes =[
         {
       path: '',
       loadChildren: './layouts/calidad-layout/calidad-layout.module#CalidadLayoutModule'
+
+  }]},
+  {
+    path: 'empleadoGerencial',
+    component: ProjectManagerComponent,
+    canActivateChild: [AppGuard],
+    children: [
+        {
+      path: '',
+      loadChildren: './layouts/projectManager-layout/projectManager-layout.module#ProjectManagerModule'
 
   }]},
  /* {

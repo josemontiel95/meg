@@ -16,58 +16,11 @@
           </h5>
         </div>
         <div class="card-body">
-          <p>Ingresa el CURP y da click en validar CURP. Si ya existe un usuario registrado con este CURP, se mostraran sus datos.</p>
           <form (ngSubmit)="onSubmit()" [formGroup]=userForm #formDir="ngForm">
             <div class="row">
-              <div class="col-md-6 col-12 ">
+              <div class="col-md-12 col-12 ">
                 <div class="form-group">
-                  <label for="curpNo">CURP</label>
-                  <input type="text" id="curpNo"  required   name="curpNo" class="form-control" placeholder="CURP" formControlName="curpNo" >
-                  <div *ngIf="curpNo.invalid && (curpNo.dirty || curpNo.touched)" class="alert alert-danger">            
-                    <div *ngIf="curpNo.errors.required">
-                      CURP requerido.
-                    </div>
-                    <div *ngIf="curpNo.errors.pattern">
-                      Formato de CURP invalido
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-12 ">
-                <div class="form-group" *ngIf="hidden">
-                  <button class="btn btn-info" [disabled]="curpNo.invalid"  (click)="validaCURP()">
-                    <span><b> Validar CURP </b></span>
-                  </button>
-                </div>
-                <div class="form-group" *ngIf="!hidden">
-                  <label for="imssNo">N&uacute;mero de IMSS</label>
-                  <input type="text" id="imssNo"  required   name="imssNo" class="form-control" placeholder="IMSS" formControlName="imssNo" >
-                  <div *ngIf="imssNo.invalid && (imssNo.dirty || imssNo.touched)" class="alert alert-danger">            
-                    <div *ngIf="imssNo.errors.required">
-                      N&uacute;mero de IMSS requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class=" col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="rfcNo">RFC</label>
-                  <input type="text" id="rfcNo"  required name="rfcNo" class="form-control" placeholder="RFC" formControlName="rfcNo" >
-                  <div *ngIf="rfcNo.invalid && (rfcNo.dirty || rfcNo.touched)" class="alert alert-danger">            
-                    <div *ngIf="rfcNo.errors.required">
-                      RFC requerido.
-                    </div>
-                    <div *ngIf="rfcNo.errors.pattern">
-                      Verifica tu R.F.C , recuerda que el R.F.C de personas físicas esta compuesto de 4 caracteres alfanuméricos, mas 6 numeros  y 3 carateres nuevamente alfanuméicos
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="rol_usuario_id">Rol</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
+                  <label for="rol_usuario_id">Rol/Privilegio</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
                   <select   class="form-control"  id="rol_usuario_id "required name="rol_usuario_id" placeholder="Puesto" formControlName="rol_usuario_id">
                     <option value=""  selected>Selecciona un rol...</option>
                     <option *ngFor="let puesto of mis_roles" [value]="puesto.id_rol_usuario">
@@ -107,17 +60,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="emailPersonal">Correo Electronico Personal</label>
-                  <input type="text" id="emailPersonal"   required   class="form-control" name="emailPersonal" placeholder="mail@lacocs.com" formControlName="emailPersonal" >
-                  <div *ngIf="emailPersonal.errors && (emailPersonal.dirty || emailPersonal.touched)"class="alert alert-danger">
-                    <div *ngIf="emailPersonal.errors.required">Correo requerido.</div>
-                    <div *ngIf="emailPersonal.errors.pattern">El correo debe contener @</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-12 ">
+              <div class="col-md-12 col-12 ">
                 <div class="form-group">
                   <label for="emailCorporativo">Correo Electronico Coorporativo</label>
                   <input type="text" id="emailCorporativo"   required   class="form-control" name="emailCorporativo" placeholder="mail@lacocs.com" formControlName="emailCorporativo" >
@@ -129,7 +72,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6 col-12">
+              <div class="col-md-12 col-12">
                 <div class="form-group">
                   <label for="contrasena">Contrase&ntilde;a</label>
                   <input type="password" id="contrasena"  required class="form-control" placeholder="Contrase&ntilde;a" formControlName="contrasena" >
@@ -140,59 +83,9 @@
                   </div>
                 </div>
               </div>
-              <div class=" col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="pm_id">Project Manager</label>
-                  <select class="form-control"  id="pm_id" required name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
-                    <option value="" selected>Selecciona un pm...</option>
-                    <option *ngFor="let pm of mis_pm" [value]="pm.id_usuario">
-                      {{pm.nombre}}
-                    </option>
-                  </select>                  
-                  <div *ngIf="pm_id.invalid && (pm_id.dirty || pm_id.touched)" class="alert alert-danger">            
-                    <div *ngIf="pm_id.errors.required">
-                      Project Manager requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6  col-12 ">
-                <div class="form-group">
-                  <label for="empresa_id">Empresa</label> 
-                  <select class="form-control"  id="empresa_id" required name="empresa_id" placeholder="Laboratorio" formControlName="empresa_id">
-                    <option value="" selected>Selecciona una empresa...</option>
-                    <option *ngFor="let emp of mis_emp" [value]="emp.id_empresa">
-                      {{emp.nombre}}
-                    </option>
-                  </select>
-                  <div *ngIf="empresa_id.invalid && (empresa_id.dirty || empresa_id.touched)" class="alert alert-danger">
-                    <div *ngIf="empresa_id.errors.required">
-                      Empresa requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6  col-12 ">
-                <div class="form-group">
-                  <label>Tipo</label>
-                  <select class="form-control"  id="tipo" required name="tipo" placeholder="Laboratorio" formControlName="tipo">
-                    <option value="" selected>Selecciona un tipo...</option>
-                    <option *ngFor="let tipo of tipos" [value]="tipo.id">
-                      {{tipo.tipo}}
-                    </option>
-                  </select>                  
-                  <div *ngIf="tipo.invalid && (tipo.dirty || tipo.touched)" class="alert alert-danger">            
-                    <div *ngIf="tipo.errors.required">
-                      Tipo requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
             <div class="btn-group"  style="float: right; padding-right: 10%;">
-              <button class="btn btn-success" *ngIf="!hidden" [disabled]="userForm.invalid" (click)="crearUsuario(); ">
+              <button class="btn btn-success" [disabled]="userForm.invalid" (click)="crearUsuario(); ">
                 <span><b> Guardar Cambios. </b></span>
               </button>
             </div>

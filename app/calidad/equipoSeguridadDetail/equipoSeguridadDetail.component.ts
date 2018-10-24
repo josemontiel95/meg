@@ -41,16 +41,18 @@ export class EquipoSeguridadDetailComponent implements OnInit {
     npassword: string;
     id;
 
-    certificacionesForm: FormGroup;
-    certificaciones= {
-      id_certificaciones: '',
-      certificacion: '',
-      descripcion: '',
-      diasValidos: '',
-      aprobable: '',
-      diasAmarillos: '',
-      diasRojos: '',
-    }
+  equipoForm: FormGroup;
+  equipo= {
+    id_equipoDeSeguridad:'',
+    nombre: '',
+    noDeSerie: '',
+    fechaDeFrabricacion: '',
+    costo: '',
+    diasValidos: '',
+    diasAmarillos: '',
+    diasRojos: '',
+    aprobable: ''
+  }
 
     
     
@@ -62,32 +64,38 @@ export class EquipoSeguridadDetailComponent implements OnInit {
     
     this.cargando=1;
 
-    let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
+    let url = `${this.global.apiRoot}/equipo/get/endpoint.php`;
 	  let search = new URLSearchParams();
-	  search.set('function',            'getByIDCalidad');
+	  search.set('function',            'getEquiopoCalidadByIdCalidad');
     search.set('token',               this.global.token);
     search.set('rol_usuario_id',      "1004");
-    search.set('id_certificaciones',  this.id);
+    search.set('id_equipoDeSeguridad',  this.id);
 	  this.http.get(url, {search}).subscribe(res => this.llenado(res.json()) );
 
-     this.certificacionesForm = new FormGroup({
-      'id_certificaciones':           new FormControl( { value: this.certificaciones.id_certificaciones,   disabled: true },  [ Validators.required]), 
-      'certificacion':                new FormControl( { value: this.certificaciones.certificacion,        disabled: this.hidden },  [ Validators.required]),
-      'descripcion':                  new FormControl( { value: this.certificaciones.descripcion,          disabled: this.hidden },  [ Validators.required]), 
-      'diasValidos':                  new FormControl( { value: this.certificaciones.diasValidos,          disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
-      'aprobable':                    new FormControl( { value: this.certificaciones.aprobable,            disabled: this.hidden },  [ Validators.required]),
-      'diasAmarillos':                new FormControl( { value: this.certificaciones.diasAmarillos,        disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]), 
-      'diasRojos':                    new FormControl( { value: this.certificaciones.diasRojos,            disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+    this.equipoForm = new FormGroup({
+      'nombre':                   new FormControl( { value: this.equipo.nombre,              disabled: this.hidden },  [ Validators.required]),
+      'noDeSerie':                new FormControl( { value: this.equipo.noDeSerie,           disabled: this.hidden },  [ Validators.required]), 
+      'fechaDeFrabricacion':      new FormControl( { value: this.equipo.fechaDeFrabricacion, disabled: this.hidden },  [ Validators.required]),
+      'costo':                    new FormControl( { value: this.equipo.costo,               disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]+(\.[0-9][0-9]?)?")]),
+      'diasValidos':              new FormControl( { value: this.equipo.diasValidos,         disabled: this.hidden },  [ Validators.required, Validators.pattern("[-]?[0-9]*")]), 
+      'diasAmarillos':            new FormControl( { value: this.equipo.diasAmarillos,       disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+      'diasRojos':                new FormControl( { value: this.equipo.diasRojos,           disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+      'aprobable':                new FormControl( { value: this.equipo.aprobable,           disabled: this.hidden },  [ Validators.required]),
+      'id_equipoDeSeguridad':     new FormControl( { value: this.equipo.id_equipoDeSeguridad,disabled: this.hidden },  [ Validators.required]),
+     
      });
   }
 
-  get id_certificaciones() { return this.certificacionesForm.get('id_certificaciones');}
-  get certificacion()      { return this.certificacionesForm.get('certificacion'     );}
-  get descripcion()        { return this.certificacionesForm.get('descripcion'       );}
-  get diasValidos()        { return this.certificacionesForm.get('diasValidos'       );}
-  get aprobable()          { return this.certificacionesForm.get('aprobable'         );}
-  get diasAmarillos()      { return this.certificacionesForm.get('diasAmarillos'     );}
-  get diasRojos()          { return this.certificacionesForm.get('diasRojos'         );}
+  get id_equipoDeSeguridad() { return this.equipoForm.get('id_equipoDeSeguridad'  );}
+  get nombre()               { return this.equipoForm.get('nombre'        );}
+  get noDeSerie()            { return this.equipoForm.get('noDeSerie'     );}
+  get fechaDeFrabricacion()  { return this.equipoForm.get('fechaDeFrabricacion' );}
+  get costo()                { return this.equipoForm.get('costo'         );}
+  get diasValidos()          { return this.equipoForm.get('diasValidos'   );}
+  get diasAmarillos()        { return this.equipoForm.get('diasAmarillos' );}
+  get diasRojos()            { return this.equipoForm.get('diasRojos'     );}
+  get aprobable()            { return this.equipoForm.get('aprobable'     );}
+   
 
   reloadData(){
     this.cargando=1;
@@ -105,36 +113,42 @@ export class EquipoSeguridadDetailComponent implements OnInit {
   }
 
   regresaHerramientas(){
-    this.router.navigate(['calidad/certificaciones']);
+    this.router.navigate(['calidad/equipoSeguridad']);
   }
   mostrar(){
     this.hidden = !this.hidden;
     const state = this.hidden ? 'disable' : 'enable';
 
-    Object.keys(this.certificacionesForm.controls).forEach((controlName) => {
-        this.certificacionesForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
+    Object.keys(this.equipoForm.controls).forEach((controlName) => {
+        this.equipoForm.controls[controlName][state](); // disables/enables each form control based on 'this.formDisabled'
     });
-    this.certificacionesForm.controls['id_certificaciones']['disable']();
+    this.equipoForm.controls['id_equipoDeSeguridad']['disable']();
+    if(this.equipoForm.getRawValue().aprobable==0){
+      this.equipoForm.controls['diasValidos']['disable']();
+      this.equipoForm.controls['diasAmarillos']['disable']();
+      this.equipoForm.controls['diasRojos']['disable']();
+    }
   }
 
 
   actualizarCertificacion(){
     this.cargando=1;
     this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
+    let url = `${this.global.apiRoot}/equipo/post/endpoint.php`;
     let formData:FormData = new FormData();
     //let search = new URLSearchParams();
-    formData.append('function',        'upDateCalidad');
+    formData.append('function',        'upDateEquipoCalidad');
     formData.append('token',           this.global.token);
     formData.append('rol_usuario_id',  '1004');
 
-    formData.append('id_certificaciones',       this.id);
-    formData.append('certificacion',            this.certificacionesForm.value.certificacion);
-    formData.append('descripcion',              this.certificacionesForm.value.descripcion);
-    formData.append('diasValidos',              this.certificacionesForm.value.diasValidos);
-    formData.append('aprobable',                this.certificacionesForm.value.aprobable);
-    formData.append('diasAmarillos',            this.certificacionesForm.value.diasAmarillos);
-    formData.append('diasRojos',                this.certificacionesForm.value.diasRojos);
+    formData.append('id_equipoDeSeguridad',     this.id);
+    formData.append('nombre',                   this.equipoForm.value.nombre);
+    formData.append('noDeSerie',                this.equipoForm.value.noDeSerie);
+    formData.append('fechaDeFrabricacion',      this.equipoForm.getRawValue().fechaDeFrabricacion);
+    formData.append('costo',                    this.equipoForm.value.costo);
+    formData.append('diasValidos',              this.equipoForm.getRawValue().diasValidos);
+    formData.append('diasAmarillos',            this.equipoForm.getRawValue().diasAmarillos);
+    formData.append('diasRojos',                this.equipoForm.getRawValue().diasRojos);
 
     this.http.post(url, formData).subscribe(res =>  {
                                               this.respuestaError(res.json());
@@ -157,15 +171,27 @@ export class EquipoSeguridadDetailComponent implements OnInit {
 
   llenado(respuesta: any){
     console.log(respuesta);
-     this.certificacionesForm.patchValue({
-      id_certificaciones: respuesta.id_certificaciones,
-      certificacion:      respuesta.certificacion,
-      descripcion:        respuesta.descripcion,
-      diasValidos:        respuesta.diasValidos,
-      aprobable:          respuesta.aprobable,
-      diasAmarillos:      respuesta.diasAmarillos,
-      diasRojos:          respuesta.diasRojos,
+     this.equipoForm.patchValue({
+      id_equipoDeSeguridad:   respuesta.id_equipoDeSeguridad,
+      nombre:                 respuesta.nombre,
+      noDeSerie:              respuesta.noDeSerie,
+      fechaDeFrabricacion:    respuesta.fechaDeFrabricacion,
+      costo:                  respuesta.costo,
+      diasValidos:            respuesta.diasValidos,
+      diasAmarillos:          respuesta.diasAmarillos,
+      diasRojos:              respuesta.diasRojos,
     });
+     if(this.equipoForm.getRawValue().diasValidos=="-1"){
+       this.equipoForm.patchValue({
+        aprobable:          0
+       });
+     }else{
+       this.equipoForm.patchValue({
+        aprobable:          1
+       });
+     }
+    this.desBut=(respuesta.active ? true : false);
+    this.actBut=(respuesta.active ? false : true);
 
     setTimeout(()=>{ 
       this.active= respuesta.active;
@@ -206,11 +232,11 @@ export class EquipoSeguridadDetailComponent implements OnInit {
 
   switchActive(active: number){
     this.cargando=1;
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
+    let url = `${this.global.apiRoot}/equipo/post/endpoint.php`;
     let formData:FormData = new FormData();
     let status=(this.active == 0 ? '1' : '0');
     formData.append('function',             'toogleActive');
-    formData.append('id_certificaciones',   this.id);
+    formData.append('id_equipoDeSeguridad',   this.id);
     formData.append('rol_usuario_id',       "1004");
     formData.append('token',                this.global.token);
     formData.append('status',               status);
@@ -230,5 +256,26 @@ export class EquipoSeguridadDetailComponent implements OnInit {
        this.reloadData();
      }
    }
+   onChangeAprobable(){
+    if(this.equipoForm.value.aprobable==0){
+      this.equipoForm.patchValue({
+         diasValidos:  -1,
+         diasAmarillos:  0,
+         diasRojos:  0
+      });
+      this.equipoForm.controls['diasValidos']['disable']();
+      this.equipoForm.controls['diasAmarillos']['disable']();
+      this.equipoForm.controls['diasRojos']['disable']();
+    }else{
+      this.equipoForm.patchValue({
+         diasValidos:  365,
+         diasAmarillos:  60,
+         diasRojos:  30
+      });
+      this.equipoForm.controls['diasValidos']['enable']();
+      this.equipoForm.controls['diasAmarillos']['enable']();
+      this.equipoForm.controls['diasRojos']['enable']();
+    }
+  }
 
 }

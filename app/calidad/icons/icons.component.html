@@ -11,7 +11,7 @@
    <div class="col-md-12 col-12">
       <div class="card">
         <div class="card-header" *ngIf="opciones">
-          <h4 class="card-title">Certificaciones a contemplar</h4>
+          <h4 class="card-title">Preferencias de certificaciones a contemplar</h4>
         </div>
         <div class="card-body">
           <div *ngIf="opciones">
@@ -34,11 +34,6 @@
    <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <div class="btn-group" style="float: right; padding-right: 5%;">
-            <button class="btn btn-success" (click)="crearUsuario();">
-              <span><b> Nuevo Usuario </b></span>
-            </button>
-          </div>
           <h4 class="card-title"> Usuarios: </h4>
         </div>
         <div class="card-body">
@@ -106,8 +101,6 @@
               <div class="col-md-3">
                 <div class="row" align="center">
                     <button type="button" class="btn btn-default btn-round" (click)="detalleUsuario();">Detalles</button>
-                    <button type="button" class="btn btn-danger btn-round " (click)="desactivarUsuario()" *ngIf="desBut">Desactivar</button>
-                    <button type="button" class="btn btn-success btn-round " (click)="activarUsuario()" *ngIf="actBut">Activar</button>
                 </div>
                 <div id="MenosDetalles">
                   <div class="row">

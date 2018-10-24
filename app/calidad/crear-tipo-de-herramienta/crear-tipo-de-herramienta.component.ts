@@ -39,7 +39,13 @@ export class CrearTipoHerramientasComponent implements OnInit {
     aprobable: '',
     diasAmarillos: '',
     diasRojos: '',
-  }
+    ocupacion: '',
+    puesto: 'Tecnico',
+    hrs: '16',
+    areaTematica: '6000 Seguridad',
+    prefijo: '',
+    consecutivo: '0' 
+   }
 
   crearCertificacion(){
     this.cargando=1;
@@ -56,6 +62,13 @@ export class CrearTipoHerramientasComponent implements OnInit {
     formData.append('aprobable',                this.certificacionesForm.value.aprobable);
     formData.append('diasAmarillos',            this.certificacionesForm.value.diasAmarillos);
     formData.append('diasRojos',                this.certificacionesForm.value.diasRojos);
+    formData.append('ocupacion',                this.certificacionesForm.value.ocupacion);
+    formData.append('puesto',                   this.certificacionesForm.value.puesto);
+    formData.append('hrs',                      this.certificacionesForm.value.hrs);
+    formData.append('areaTematica',             this.certificacionesForm.value.areaTematica);
+    formData.append('prefijo',                  this.certificacionesForm.value.prefijo);
+    formData.append('consecutivo',              this.certificacionesForm.getRawValue().consecutivo);
+
     this.http.post(url, formData).subscribe(res => {
       this.respuestaSwitch(res.json());
     } ); 
@@ -87,6 +100,13 @@ export class CrearTipoHerramientasComponent implements OnInit {
       'aprobable':                    new FormControl( { value: this.certificaciones.aprobable,            disabled: this.hidden },  [ Validators.required]),
       'diasAmarillos':                new FormControl( { value: this.certificaciones.diasAmarillos,        disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]), 
       'diasRojos':                    new FormControl( { value: this.certificaciones.diasRojos,            disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+      'ocupacion':                    new FormControl( { value: this.certificaciones.ocupacion,            disabled: this.hidden },  [ Validators.required]),
+      'puesto':                       new FormControl( { value: this.certificaciones.puesto,               disabled: this.hidden },  [ Validators.required]),
+      'hrs':                          new FormControl( { value: this.certificaciones.hrs,                  disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+      'areaTematica':                 new FormControl( { value: this.certificaciones.areaTematica,         disabled: this.hidden },  [ Validators.required]),
+      'prefijo':                      new FormControl( { value: this.certificaciones.prefijo,              disabled: this.hidden },  [ Validators.required]),
+      'consecutivo':                  new FormControl( { value: this.certificaciones.consecutivo,          disabled: true        },  [ Validators.required]),
+
      });
   }
 
@@ -96,7 +116,13 @@ export class CrearTipoHerramientasComponent implements OnInit {
   get aprobable()          { return this.certificacionesForm.get('aprobable'         );}
   get diasAmarillos()      { return this.certificacionesForm.get('diasAmarillos'     );}
   get diasRojos()          { return this.certificacionesForm.get('diasRojos'         );}
-   
+  get ocupacion()          { return this.certificacionesForm.get('ocupacion'         );}
+  get puesto()             { return this.certificacionesForm.get('puesto'            );}
+  get hrs()                { return this.certificacionesForm.get('hrs'               );}
+  get areaTematica()       { return this.certificacionesForm.get('areaTematica'      );}
+  get prefijo()            { return this.certificacionesForm.get('prefijo'           );}
+  get consecutivo()        { return this.certificacionesForm.get('consecutivo'       );}
+
    submitted = false;
 
   regresaUsuario(){

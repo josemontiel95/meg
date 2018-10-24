@@ -30,31 +30,34 @@ export class CrearEquipoSeguridadComponent implements OnInit {
   constructor(private router: Router, private data: DataService, private http: Http) { }
   
 
-  certificacionesForm: FormGroup;
-  certificaciones= {
-    certificacion: '',
-    descripcion: '',
+  equipoForm: FormGroup;
+  equipo= {
+    nombre: '',
+    noDeSerie: '',
+    fechaDeFrabricacion: '',
+    costo: '',
     diasValidos: '',
-    aprobable: '',
     diasAmarillos: '',
     diasRojos: '',
+    aprobable: ''
   }
 
   crearCertificacion(){
     this.cargando=1;
     this.data.currentGlobal.subscribe(global => this.global = global);
-    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
+    let url = `${this.global.apiRoot}/equipo/post/endpoint.php`;
     let formData:FormData = new FormData();
-    formData.append('function',                 'insertCalidad');
+    formData.append('function',                 'insertEquipoCalidad');
     formData.append('token',                    this.global.token);
     formData.append('rol_usuario_id',           "1004");
 
-    formData.append('certificacion',            this.certificacionesForm.value.certificacion);
-    formData.append('descripcion',              this.certificacionesForm.value.descripcion);
-    formData.append('diasValidos',              this.certificacionesForm.value.diasValidos);
-    formData.append('aprobable',                this.certificacionesForm.value.aprobable);
-    formData.append('diasAmarillos',            this.certificacionesForm.value.diasAmarillos);
-    formData.append('diasRojos',                this.certificacionesForm.value.diasRojos);
+    formData.append('nombre',                   this.equipoForm.value.nombre);
+    formData.append('noDeSerie',                this.equipoForm.value.noDeSerie);
+    formData.append('fechaDeFrabricacion',      this.equipoForm.getRawValue().fechaDeFrabricacion);
+    formData.append('costo',                    this.equipoForm.value.costo);
+    formData.append('diasValidos',              this.equipoForm.getRawValue().diasValidos);
+    formData.append('diasAmarillos',            this.equipoForm.getRawValue().diasAmarillos);
+    formData.append('diasRojos',                this.equipoForm.getRawValue().diasRojos);
     this.http.post(url, formData).subscribe(res => {
       this.respuestaSwitch(res.json());
     } ); 
@@ -79,29 +82,53 @@ export class CrearEquipoSeguridadComponent implements OnInit {
     this.data.currentGlobal.subscribe(global => this.global = global);
     this.cargando=0;
 
-    this.certificacionesForm = new FormGroup({
-      'certificacion':                new FormControl( { value: this.certificaciones.certificacion,        disabled: this.hidden },  [ Validators.required]),
-      'descripcion':                  new FormControl( { value: this.certificaciones.descripcion,          disabled: this.hidden },  [ Validators.required]), 
-      'diasValidos':                  new FormControl( { value: this.certificaciones.diasValidos,          disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
-      'aprobable':                    new FormControl( { value: this.certificaciones.aprobable,            disabled: this.hidden },  [ Validators.required]),
-      'diasAmarillos':                new FormControl( { value: this.certificaciones.diasAmarillos,        disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]), 
-      'diasRojos':                    new FormControl( { value: this.certificaciones.diasRojos,            disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+    this.equipoForm = new FormGroup({
+      'nombre':                   new FormControl( { value: this.equipo.nombre,              disabled: this.hidden },  [ Validators.required]),
+      'noDeSerie':                new FormControl( { value: this.equipo.noDeSerie,           disabled: this.hidden },  [ Validators.required]), 
+      'fechaDeFrabricacion':      new FormControl( { value: this.equipo.fechaDeFrabricacion, disabled: this.hidden },  [ Validators.required]),
+      'costo':                    new FormControl( { value: this.equipo.costo,               disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]+(\.[0-9][0-9]?)?")]),
+      'diasValidos':              new FormControl( { value: this.equipo.diasValidos,         disabled: this.hidden },  [ Validators.required, Validators.pattern("[-]?[0-9]*")]), 
+      'diasAmarillos':            new FormControl( { value: this.equipo.diasAmarillos,       disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+      'diasRojos':                new FormControl( { value: this.equipo.diasRojos,           disabled: this.hidden },  [ Validators.required, Validators.pattern("[0-9]*")]),
+      'aprobable':                new FormControl( { value: this.equipo.aprobable,           disabled: this.hidden },  [ Validators.required]),
      });
   }
 
-  get certificacion()      { return this.certificacionesForm.get('certificacion'     );}
-  get descripcion()        { return this.certificacionesForm.get('descripcion'       );}
-  get diasValidos()        { return this.certificacionesForm.get('diasValidos'       );}
-  get aprobable()          { return this.certificacionesForm.get('aprobable'         );}
-  get diasAmarillos()      { return this.certificacionesForm.get('diasAmarillos'     );}
-  get diasRojos()          { return this.certificacionesForm.get('diasRojos'         );}
+  get nombre()               { return this.equipoForm.get('nombre'        );}
+  get noDeSerie()            { return this.equipoForm.get('noDeSerie'     );}
+  get fechaDeFrabricacion()  { return this.equipoForm.get('fechaDeFrabricacion' );}
+  get costo()                { return this.equipoForm.get('costo'         );}
+  get diasValidos()          { return this.equipoForm.get('diasValidos'   );}
+  get diasAmarillos()        { return this.equipoForm.get('diasAmarillos' );}
+  get diasRojos()            { return this.equipoForm.get('diasRojos'     );}
+  get aprobable()            { return this.equipoForm.get('aprobable'     );}
    
    submitted = false;
 
   regresaUsuario(){
     this.router.navigate(['calidad/equipoSeguridad']);
   }
-
+  onChangeAprobable(){
+    if(this.equipoForm.value.aprobable==0){
+      this.equipoForm.patchValue({
+         diasValidos:  -1,
+         diasAmarillos:  0,
+         diasRojos:  0
+      });
+      this.equipoForm.controls['diasValidos']['disable']();
+      this.equipoForm.controls['diasAmarillos']['disable']();
+      this.equipoForm.controls['diasRojos']['disable']();
+    }else{
+      this.equipoForm.patchValue({
+         diasValidos:  365,
+         diasAmarillos:  60,
+         diasRojos:  30
+      });
+      this.equipoForm.controls['diasValidos']['enable']();
+      this.equipoForm.controls['diasAmarillos']['enable']();
+      this.equipoForm.controls['diasRojos']['enable']();
+    }
+  }
   onSubmit() { this.submitted = true; }
 
 

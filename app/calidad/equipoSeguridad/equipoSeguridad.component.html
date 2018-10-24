@@ -23,13 +23,92 @@
             </button>
           </div>
           <div class="btn-group" style="float: right; padding-right: 5%;">
+            <button class="btn btn-success" (click)="crearLoteEquipoSeguridad();">
+              <span><b>Nuevo Lote</b></span>
+            </button>
+          </div>
+          <div class="btn-group" style="float: right; padding-right: 5%;">
             <button class="btn btn-success" (click)="crearEquipoSeguridad();">
-              <span><b>Nuevo Equipo de Seguridad</b></span>
+              <span><b>Nuevo</b></span>
             </button>
           </div>
           <h4 class="card-title">Equipo de Seguridad:</h4>
         </div>
         <div class="card-body">
+            <div id="tarjetaMasDetalles" *ngIf="hidden">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="row">  
+                          <img class="img-usuario" src="{{this.imgUrl}}" alt="..."> 
+                    </div>
+                  </div>
+                  <div class="col-md-9">
+                     <div class="row">
+                        <div class="table-responsive">
+                          <table class="table">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <b>ID</b>
+                                </td>
+                                <td>
+                                  {{id}}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <b>N&uacute;mero de Serie</b>
+                                </td>
+                                <td>
+                                  {{noDeSerie}}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div> 
+                      </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-9">
+                      <div class="row">
+                        <div class="table-responsive">
+                          <table class="table">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <b>Nombre</b>
+                                </td>
+                                <td>
+                                  {{nombre}}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <b>Responsable</b>
+                                </td>
+                                <td>
+                                  {{nombreResponsable}}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div> 
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="row" align="center">
+                        <button type="button" class="btn btn-success btn-round" (click)="detalleUsuario();">Detalles del equipo</button>
+                        <button type="button" class="btn btn-info btn-round " (click)="verPerfil()" *ngIf="viewProfile">Ver Perfil del Empleado</button>
+                    </div>
+                    <div id="MenosDetalles">
+                      <div class="row">
+                          <button type="button" class="btn btn-primary btn-link" (click)="menosDetalles()">Menos detalles</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
          <ag-grid-angular 
             #agGrid
             id="myGrid"

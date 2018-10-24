@@ -43,6 +43,13 @@ export class HerramientaDetailComponent implements OnInit {
     capacidad:''
   }
 
+  fechasForm: FormGroup;
+  fechas = {
+    fechaAsistencia: '',
+    fechaAprobada:'',
+    calificacion:'',
+  }
+
 
     loginMessage: string= "";
     loginresp: LoginResp;
@@ -69,6 +76,7 @@ export class HerramientaDetailComponent implements OnInit {
     completados= false;
     falta= false;
     statusTitle="";
+    rowClassRules;
     
   constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) {
     this.columnDefs = [
@@ -76,15 +84,36 @@ export class HerramientaDetailComponent implements OnInit {
     {headerName: 'Nombre', field: 'nombre' },
     {headerName: 'Rol', field: 'rol' },
     {headerName: 'Fecha CP', field: 'aprobadaFecha' },
+    {headerName: 'Vigencia CP', field: 'fechaVigencia' },
+    {headerName: 'Estado CP', field: 'estado' },
     {headerName: 'Ctrl Salon CP', field: 'id_salonCP' },
     {headerName: 'Inscrito', field: 'Inscrito' },
-    {headerName: 'Aprobada', field: 'aprobada' },
     {headerName: 'Asistencia', field: 'asistencia' },
-
-
-
+    {headerName: 'Aprobada', field: 'aprobada' }
   ];
-    this.rowSelection = "single";
+   this.rowSelection = "single";
+   this.rowClassRules = {
+      "row-green-warning": function(params) {
+        var color = params.data.color;
+        return color == 0;
+      },
+      "row-yelloy-warning": function(params) {
+        var color = params.data.color;
+        return color == 1;
+      },
+      "row-orange-warning": function(params) {
+        var color = params.data.color;
+        return color == 2;
+      },
+      "row-red-warning": function(params) {
+        var color = params.data.color;
+        return color == 3;
+      },
+      "row-blue-warning": function(params) {
+        var color = params.data.color;
+        return color == null;
+      }
+    };
    }
 
    rowData: any;
@@ -117,12 +146,22 @@ export class HerramientaDetailComponent implements OnInit {
       'lugar':               new FormControl({ value:this.salon.lugar,             disabled: this.hidden },  [Validators.required]), 
       'capacidad':           new FormControl({ value:this.salon.capacidad,         disabled: this.hidden },  [Validators.required, Validators.pattern("^([0-9])*")])
     });
+    this.fechasForm = new FormGroup({
+      'fechaAsistencia':    new FormControl({ value:this.fechas.fechaAsistencia,  disabled: false },  [Validators.required]),         
+      'fechaAprobada':      new FormControl({ value:this.fechas.fechaAprobada,    disabled: false },  [Validators.required]),         
+      'calificacion':      new FormControl({ value:this.fechas.calificacion,      disabled: false },  [Validators.required, Validators.pattern("^([0-9])*")]),         
+      
+    });
   }
   get id_salon() { return this.salonForm.get('certificacion_id'); }
   get certificacion_id() { return this.salonForm.get('certificacion_id'); }
   get fecha()            { return this.salonForm.get('fecha'); }
   get lugar()            { return this.salonForm.get('lugar'); }
   get capacidad()        { return this.salonForm.get('capacidad'); }
+  
+  get fechaAsistencia()  { return this.fechasForm.get('fechaAsistencia'); }
+  get fechaAprobada()    { return this.fechasForm.get('fechaAprobada'); }
+  get calificacion()     { return this.fechasForm.get('calificacion'); }
 
   switchAlerta(exitoCon: any){
     this.exitoCon = false;
@@ -188,6 +227,10 @@ export class HerramientaDetailComponent implements OnInit {
       lugar: respuesta.lugar,
       capacidad: respuesta.capacidad
     });
+    this.fechasForm.patchValue({
+      fechaAsistencia: respuesta.fechaAsistencia,
+      fechaAprobada: respuesta.fechaAprobada
+    });
     this.statusSalon=respuesta.status;
     switch(respuesta.status){
       case '0':
@@ -196,7 +239,7 @@ export class HerramientaDetailComponent implements OnInit {
       break;
       case '1':
         this.cerrados=true;
-        this.statusTitle="Salon cerrado, puedes ver pero ya no modificar. Da click en habilitar el calificador"
+        this.statusTitle="Salon cerrado, puedes ver y pasar asistencia pero ya no modificar. Si así lo deseas, da click en habilitar el calificador"
 
       break;
       case '2':
@@ -311,7 +354,7 @@ export class HerramientaDetailComponent implements OnInit {
   }
 
 
-   onGridReady(params) {
+  onGridReady(params) {
     this.data.currentGlobal.subscribe(global => this.global = global);
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
@@ -396,14 +439,23 @@ export class HerramientaDetailComponent implements OnInit {
         case '0':
         break;
         case '1':
-          this.paseLista(id_usuario_salon);
+          if(this.fechaAsistencia.invalid){
+            window.alert("Debes introducir una fecha válida");
+          }else{
+            this.paseLista(id_usuario_salon);
+          }
         break;
         case '2':
-          // Calificar
-          this.calificar(id_usuario_salon);
+          if(this.fechaAprobada.invalid || this.calificacion.invalid){
+            window.alert("Debes introducir una fechay calificación válidas");
+          }else{
+            this.calificar(id_usuario_salon);
+          }          
         break;
         case '3':
           window.alert("En este momento podrias ver la tarjeta de la certificacion individual, subir foto/PDF del docuemnto que respalda.");
+          
+          this.router.navigate(['calidad/salones/salon-user-detail/'+id_usuario_salon]);
           // Visualizar Certificacion 
         break;
         default:
@@ -415,6 +467,11 @@ export class HerramientaDetailComponent implements OnInit {
     }
   }
   calificar(id_usuario_salon){
+    if(window.confirm("¿Estas seguro que quieres calificar? Se le asignara un folio. Esta acción no se puede revertir")){
+
+    }else{
+      return;
+    }
     let asistencia=this.falta ? '0' : '1';
     this.cargando=1;
     this.data.currentGlobal.subscribe(global => this.global = global);
@@ -426,6 +483,10 @@ export class HerramientaDetailComponent implements OnInit {
     formData.append('asistencia',        asistencia);
     formData.append('id_usuario_salon',  id_usuario_salon);
 
+    formData.append('fechaAprobada',   this.fechasForm.value.fechaAprobada);
+    formData.append('calificacion',    this.fechasForm.value.calificacion);
+    formData.append('id_salon',        this.id);
+
     this.http.post(url, formData).subscribe(res =>  {
       this.respuestaCalificar(res.json());
     } );
@@ -433,8 +494,9 @@ export class HerramientaDetailComponent implements OnInit {
   respuestaCalificar(res){
     this.cargando=this.cargando-1;
     if(res.error!=0){
+      console.log(res);
       window.alert(res.estatus);
-      location.reload();
+      //location.reload();
     }else{
       //reloadGrid
      this.mostrarInscritos();
@@ -452,6 +514,8 @@ export class HerramientaDetailComponent implements OnInit {
 
     formData.append('asistencia',        asistencia);
     formData.append('id_usuario_salon',  id_usuario_salon);
+    formData.append('fechaAsistencia',   this.fechasForm.value.fechaAsistencia);
+    formData.append('id_salon',          this.id);
 
     this.http.post(url, formData).subscribe(res =>  {
       this.respuestaPaseLista(res.json());

@@ -1,0 +1,165 @@
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-10 ml-auto mr-auto">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">
+            <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaUsuario();"></i>
+            Crear Lote de Equipo de Seguridad
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()"  [formGroup]=equipoForm #formDir="ngForm">
+            <div class="row">
+              <div class="col-md-12 col-12">
+                <p>El lote es un identificador de 3 caracteres alfab&eacute;ticos el cual coinstriuran un identificador &uacute;nico para cada equipo individual.</p>
+                <p>Podras identificar este lote posteriormente con el n&uacute;mero de serie formado por LOT-XX-DD-CCC-##.</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="cantidad">Cantidad</label>
+                  <input type="text" id="cantidad" class="form-control" required placeholder="Cantidad" formControlName="cantidad">
+                </div>
+                <div *ngIf="cantidad.invalid && (cantidad.dirty || cantidad.touched)" class="alert alert-danger">
+                  <div *ngIf="cantidad.errors.required">
+                    Cantidad requerido
+                  </div>
+                  <div *ngIf="cantidad.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="noDeSerie">Lote</label>
+                  <input type="text" id="noDeSerie" class="form-control" required placeholder="Lote" formControlName="noDeSerie">
+                </div>
+                <div *ngIf="noDeSerie.invalid && (noDeSerie.dirty || noDeSerie.touched)" class="alert alert-danger">
+                  <div *ngIf="noDeSerie.errors.required">
+                    Lote requerido
+                  </div>
+                  <div *ngIf="noDeSerie.errors.pattern">
+                    Lote debe contener 4 caracteres alfab&eacute;ticos en mayusculas
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr><hr>
+            <div class="row">
+              <div class="col-md-12 col-12">
+                <div class="form-group">
+                  <label for="nombre">Nombre</label>
+                  <input type="text" id="nombre" class="form-control" required placeholder="Nombre" formControlName="nombre">
+                </div>
+                <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="alert alert-danger">
+                  <div *ngIf="nombre.errors.required">
+                    Nombre requerido.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="costo">Costo</label>
+                  <input type="text" id="costo" class="form-control" required placeholder="Costo" formControlName="costo">
+                </div>
+                <div *ngIf="costo.invalid && (costo.dirty || costo.touched)" class="alert alert-danger">
+                  <div *ngIf="costo.errors.required">
+                    Costo requerido.
+                  </div>
+                  <div *ngIf="costo.errors.pattern">
+                    Costo solo debe contener decimales (precisi&oacute;n a centecimas) o enteros
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="aprobable">¿Caduca?</label>
+                  <select class="form-control"  id="aprobable" required name="id_concretera" formControlName="aprobable" (change)="onChangeAprobable()">
+                    <option value=""  selected >Selecciona...</option>
+                    <option value="0"  >No</option>
+                    <option value="1"  >Si</option>                   
+                  </select>                
+                </div>
+                <div *ngIf="aprobable.invalid && (aprobable.dirty || aprobable.touched)" class="alert alert-danger">
+                  <div *ngIf="aprobable.errors.required">
+                    Este campo es requerido requerido.
+                  </div>
+                </div>
+              </div> 
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="fechaDeFrabricacion">Fecha de Fabricaci&oacute;n</label>
+                  <input type="date" id="fechaDeFrabricacion" class="form-control" required placeholder="Fecha de Fabricaci&oacute;n" formControlName="fechaDeFrabricacion">
+                </div>
+                <div *ngIf="fechaDeFrabricacion.invalid && (fechaDeFrabricacion.dirty || fechaDeFrabricacion.touched)" class="alert alert-danger">
+                  <div *ngIf="fechaDeFrabricacion.errors.required">
+                    Fecha de Fabricación requerida.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="diasValidos">Dias v&aacute;lidos</label>
+                  <input type="text" id="diasValidos" class="form-control" placeholder="Dias v&aacute;lidos" required formControlName="diasValidos">
+                </div>
+                <div *ngIf="diasValidos.invalid && (diasValidos.dirty || diasValidos.touched)" class="alert alert-danger">
+                  <div *ngIf="diasValidos.errors.required">
+                    Este campo es requerido requerido.
+                  </div>
+                  <div *ngIf="diasValidos.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="diasAmarillos">Dias amarillos</label>
+                  <input type="text" id="diasAmarillos" class="form-control" required placeholder="Dias amarillos" formControlName="diasAmarillos">
+                </div>
+                <div *ngIf="diasAmarillos.invalid && (diasAmarillos.dirty || diasAmarillos.touched)" class="alert alert-danger">
+                  <div *ngIf="diasAmarillos.errors.required">
+                    Dias amarillos requeridos.
+                  </div>
+                  <div *ngIf="diasAmarillos.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="diasRojos">Dias rojos</label>
+                  <input type="text" id="diasRojos" class="form-control" required placeholder="Dias rojos" formControlName="diasRojos">
+                </div>
+                <div *ngIf="diasRojos.invalid && (diasRojos.dirty || diasRojos.touched)" class="alert alert-danger">
+                  <div *ngIf="diasRojos.errors.required">
+                    Dias rojos requeridos.
+                  </div>
+                  <div *ngIf="diasRojos.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group"  style="float: right; padding-right: 10%;">
+              <button class="btn btn-success"  [disabled]="equipoForm.invalid" (click)="crearCertificacion();">
+                <span><b> Guardar Cambios </b></span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

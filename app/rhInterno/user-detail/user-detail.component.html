@@ -13,7 +13,7 @@
         <div class="card-header">
           <h5 class="title">
             <i _ngcontent-c25="" class="now-ui-icons arrows-1_minimal-left pr-3" (click)="regresaUsuario();"></i>
-            Perfil de {{this.userForm.value.nombre + ' '+ this.userForm.value.apellido}}
+            Perfil de {{this.userForm.getRawValue().nombre + ' '+ this.userForm.getRawValue().apellido}}
           </h5>
         </div>
         <div class="card-body">
@@ -22,13 +22,13 @@
               <div class="col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="id_usuario">Ctrl</label> 
-                  <input type="text" class="form-control" id="id_usuario" required name="id_usuario" placeholder="Puesto" formControlName="id_usuario" >
+                  <input type="text" class="form-control" id="id_usuario" required name="id_usuario" placeholder="Ctrl" formControlName="id_usuario" >
                 </div>
               </div>
               <div class="col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="rol_usuario_id">Rol</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
-                  <select   class="form-control"  id="rol_usuario_id "required name="rol_usuario_id" placeholder="Puesto" formControlName="rol_usuario_id">
+                  <select   class="form-control"  id="rol_usuario_id "required name="rol_usuario_id" placeholder="Rol" formControlName="rol_usuario_id" (change)="onChangeRol()">
                     <option value="Selecciona un rol..."  selected>Selecciona un rol...</option>
                     <option *ngFor="let puesto of mis_roles" [value]="puesto.id_rol_usuario">
                       {{puesto.rol}}
@@ -39,6 +39,30 @@
                       Puesto requerido.
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="noDeEmpleado">N.D.E.</label> 
+                  <input type="text" class="form-control" id="noDeEmpleado" required name="noDeEmpleado" placeholder="N&uacute;mero de empleado" formControlName="noDeEmpleado" >
+                </div>
+                <div *ngIf="noDeEmpleado.invalid && (noDeEmpleado.dirty || noDeEmpleado.touched)" class="alert alert-danger">
+                  <div *ngIf="noDeEmpleado.errors.required">
+                    N.D.E. requerido.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="puesto_id">Puesto</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
+                  <select   class="form-control"  id="puesto_id " name="puesto_id" placeholder="Puesto" formControlName="puesto_id">
+                    <option value="NULL"  selected>Selecciona un puesto...</option>
+                    <option *ngFor="let puesto of mis_puestos" [value]="puesto.id_puesto">
+                      {{puesto.puesto}}
+                    </option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -70,9 +94,8 @@
               <div class="col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="emailPersonal">Correo Electronico Personal</label>
-                  <input type="text" id="emailPersonal"   required   class="form-control" name="emailPersonal" placeholder="mail@lacocs.com" formControlName="emailPersonal" >
+                  <input type="text" id="emailPersonal"   class="form-control" name="emailPersonal" placeholder="mail@lacocs.com" formControlName="emailPersonal" >
                   <div *ngIf="emailPersonal.errors && (emailPersonal.dirty || emailPersonal.touched)"class="alert alert-danger">
-                    <div *ngIf="emailPersonal.errors.required">Correo requerido.</div>
                     <div *ngIf="emailPersonal.errors.pattern">El correo debe contener @</div>
                   </div>
                 </div>
@@ -130,17 +153,12 @@
               <div class=" col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="pm_id">Project Manager</label>
-                  <select class="form-control"  id="pm_id" required name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
-                    <option value="" selected>Selecciona un pm...</option>
+                  <select class="form-control"  id="pm_id" name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
+                    <option value="NULL" selected>Selecciona un pm...</option>
                     <option *ngFor="let pm of mis_pm" [value]="pm.id_usuario">
                       {{pm.nombre}}
                     </option>
                   </select>                  
-                  <div *ngIf="pm_id.invalid && (pm_id.dirty || pm_id.touched)" class="alert alert-danger">            
-                    <div *ngIf="pm_id.errors.required">
-                      Project Manager requerido.
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -148,49 +166,49 @@
               <div class="col-md-6  col-12 ">
                 <div class="form-group">
                   <label for="empresa_id">Empresa</label> 
-                  <select class="form-control"  id="empresa_id" required name="empresa_id" placeholder="Laboratorio" formControlName="empresa_id">
-                    <option value="Selecciona una empresa..." selected>Selecciona una empresa...</option>
+                  <select class="form-control"  id="empresa_id" name="empresa_id" placeholder="Laboratorio" formControlName="empresa_id">
+                    <option value="NULL" selected>Selecciona una empresa...</option>
                     <option *ngFor="let emp of mis_emp" [value]="emp.id_empresa">
                       {{emp.nombre}}
                     </option>
                   </select>
-                  <div *ngIf="empresa_id.invalid && (empresa_id.dirty || empresa_id.touched)" class="alert alert-danger">
-                    <div *ngIf="empresa_id.errors.required">
-                      Empresa requerido.
-                    </div>
-                  </div>
                 </div>
               </div>
               <div class="col-md-6  col-12 ">
                 <div class="form-group">
                   <label>Tipo</label>
-                  <select class="form-control"  id="tipo" required name="tipo" placeholder="Laboratorio" formControlName="tipo">
-                    <option selected>Selecciona un tipo...</option>
+                  <select class="form-control"  id="tipo" name="tipo" placeholder="Laboratorio" formControlName="tipo">
+                    <option value="" selected>Selecciona un tipo...</option>
                     <option *ngFor="let tipo of tipos" [value]="tipo.id">
                       {{tipo.tipo}}
                     </option>
                   </select>                  
-                  <div *ngIf="tipo.invalid && (tipo.dirty || tipo.touched)" class="alert alert-danger">            
-                    <div *ngIf="tipo.errors.required">
-                      Tipo requerido.
-                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 col-12 ">
+                <div class="form-group">
+                  <label for="fechaInicio">Fecha de ingreso</label>
+                  <input type="date" id="fechaInicio"   required   class="form-control" name="fechaInicio" placeholder="mail@lacocs.com" formControlName="fechaInicio" >
+                  <div *ngIf="fechaInicio.errors && (fechaInicio.dirty || fechaInicio.touched)"class="alert alert-danger">
+                    <div *ngIf="fechaInicio.errors.required">Fecha de ingreso requerida.</div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="btn-group"  style="float: right; padding-right: 10%;">
               <button class="btn btn-info" *ngIf="hidden == true"  (click)="mostrar()">
-                <span><b> Cambiar Datos. </b></span>
+                <span><b> Cambiar Datos </b></span>
               </button>
               <button class="btn btn-success" *ngIf="!hidden" [disabled]="userForm.invalid" (click)="actualizarUsuario(  ); ">
-                <span><b> Guardar Cambios. </b></span>
+                <span><b> Guardar Cambios </b></span>
               </button>
             </div>
           </form>
         </div>
       </div>
     </div>
-
     <div class="col-md-4">
       <div class="card card-user">
         <div class="image">
@@ -199,10 +217,44 @@
         <div class="card-body">
           <div class="author">
             <img class="avatar border-gray" src="{{this.imgUrl}}" (click)="subirFoto()" alt="...">
-            <h5 class="title">{{this.userForm.value.nombre + ' '+ this.userForm.value.apellido}}</h5>
+            <h5 class="title">{{this.userForm.getRawValue().nombre + ' '+ this.userForm.getRawValue().apellido}}</h5>
             <p class="description">
-              {{this.userForm.value.rol}}
+              {{this.userForm.getRawValue().rol}}
             </p>
+            <div class="btn-group">
+              <button class="btn btn-success"  *ngIf="!active"  (click)="toogleActive();">
+                <span><b>Alta</b></span>
+              </button>
+               <button class="btn btn-danger"  *ngIf="active"  (click)="toogleActive();">
+                <span><b>Baja</b></span>
+              </button>
+            </div>
+            <form (ngSubmit)="onSubmit()" [formGroup]=passwordForm #formDir="ngForm">
+              <div class="form-group" [hidden]="desBut">
+                <label for="password1">Contrase&ntilde;a</label>
+                <input class="form-control"  required id="password1" formControlName="password1" placeholder="Contrase&ntilde;a" type="password" >
+                <div *ngIf="password1.invalid && (password1.dirty || password1.touched)" class="alert alert-danger">            
+                  <div *ngIf="password1.errors.required"> Contrase&ntilde;a requerida.</div>
+                </div>
+              </div>
+              <div class="form-group" [hidden]="desBut">
+                <label for="npassword">Contrase&ntilde;a</label>
+                <input class="form-control" required id="npassword" formControlName="npassword" placeholder="Repite Contrase&ntilde;a"type="password" >
+                <div *ngIf="npassword.invalid && (npassword.dirty || npassword.touched)" class="alert alert-danger">            
+                  <div *ngIf="npassword.errors.required"> Contrase&ntilde;a requerida.</div>
+                </div>
+              </div>
+              <div [hidden]= "!resppass" class="alert alert-danger">
+                Las Contrase&ntilde;as no coinciden.
+              </div>
+              <div [hidden]= "!exitoCon" class="alert alert-success">
+                Nueva contrase&ntilde;a actualizada
+              </div>
+              <div class="button-container">
+                <button type="button" class="btn btn-info btn-round " (click)="cambiarContrasena()" *ngIf="desBut">Cambiar Contrase&ntilde;a</button>
+                <button type="button" class="btn btn-success btn-round " [disabled]="passwordForm.invalid" (click)="guardarContrasena();" *ngIf="actBut">Guardar Contrase&ntilde;a</button>
+              </div>
+            </form>
           </div>
         </div>
         <hr>
@@ -211,6 +263,46 @@
             <i class="now-ui-icons ui-1_email-85"></i>
             <p>{{this.userForm.getRawValue().emailCorporativo}}</p>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="!active">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">
+              Informaci&oacute;n de Baja
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()" [formGroup]=bajaForm #formDir="ngForm">
+            <div class="row">
+              <div class="col-md-12 col-12 ">
+                <div class="form-group">
+                  <label for="fechaBaja">Fecha Baja</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
+                  <input type="date" class="form-control" id="fechaBaja" required name="fechaBaja" placeholder="Fecha Baja" formControlName="fechaBaja" >
+                  <div *ngIf="fechaBaja.invalid && (fechaBaja.dirty || fechaBaja.touched)" class="alert alert-danger">
+                    <div *ngIf="fechaBaja.errors.required">
+                      Fecha Baja
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12 col-12 ">
+                <div class="form-group">
+                  <label for="razones">Razones</label> 
+                  <textarea  class="form-control" id="razones"  formControlName="razones" ></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group"  style="float: right; padding-right: 10%;">
+              <button class="btn btn-info" *ngIf="bajaComplete"  (click)="mostrarBajainfo()">
+                <span><b> Cambiar Datos </b></span>
+              </button>
+              <button class="btn btn-success" *ngIf="!bajaComplete" [disabled]="bajaForm.invalid" (click)="actualizarBajaInfo(); ">
+                <span><b> Guardar Cambios </b></span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -296,7 +388,7 @@
               <div class="col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="tipoSangre">Tipo de Sangre</label>
-                  <select class="form-control"  id="tipo" required name="tipoSangre" placeholder="Laboratorio" formControlName="tipoSangre">
+                  <select class="form-control"  id="tipoSangre" required name="tipoSangre" placeholder="Laboratorio" formControlName="tipoSangre">
                     <option selected>Selecciona un tipo...</option>
                     <option *ngFor="let sangre of sangres" [value]="sangre.id">
                       {{sangre.tipo}}
@@ -454,6 +546,33 @@
               <br>
               <button class="btn btn-info buttonDoc" (click)="subirDoc(6)">
                 <span><b> Cambiar Contrato</b></span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>Comprobante de domicilio</b></p>
+              <img class="imageDoc" [src]="this.comprobanteDomicilioIcon" (click)="abrirComprobanteDomicilio()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(7)">
+                <span><b> Cambiar Comprobante</b></span>
+              </button>
+            </div>
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>Solicitud de Trabajo</b></p>
+              <img class="imageDoc" [src]="this.solicitudTrabajoIcon" (click)="abrirSolicitudTrabajo()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(8)">
+                <span><b> Cambiar Solicitud</b></span>
+              </button>
+            </div>
+            <div class="col-md-4 col-12 ">
+              <p style="text-align: center;"><b>Anexo / otros</b></p>
+              <img class="imageDoc" [src]="this.varioIcon" (click)="abrirVario()" alt="...">
+              <br>
+              <button class="btn btn-info buttonDoc" (click)="subirDoc(9)">
+                <span><b> Cambiar Anexo</b></span>
               </button>
             </div>
           </div>
