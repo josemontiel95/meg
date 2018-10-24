@@ -130,33 +130,81 @@
             </button>
           </div>
           <div class="btn-group" style="float: right; padding-right: 5%;" *ngIf="falta && cerrados">
-            <button class="btn btn-success"  (click)="toogleFalta();">
+            <button class="btn btn-success" [disabled]="fechaAsistencia.invalid" (click)="toogleFalta();">
               <span><b> Marcar Asistencia </b></span>
             </button>
           </div>
           <div class="btn-group" style="float: right; padding-right: 5%;" *ngIf="!falta && cerrados">
-            <button class="btn btn-danger"  (click)="toogleFalta();">
+            <button class="btn btn-danger" [disabled]="fechaAsistencia.invalid" (click)="toogleFalta();">
               <span><b> Marcar Falta </b></span>
             </button>
           </div>
           <div class="btn-group" style="float: right; padding-right: 5%;" *ngIf="falta && calificando">
-            <button class="btn btn-success"  (click)="toogleFalta();">
+            <button class="btn btn-success" [disabled]="fechaAprobada.invalid || calificacion.invalid" (click)="toogleFalta();">
               <span><b> Marcar aprobado </b></span>
             </button>
           </div>
           <div class="btn-group" style="float: right; padding-right: 5%;" *ngIf="!falta && calificando">
-            <button class="btn btn-danger"  (click)="toogleFalta();">
+            <button class="btn btn-danger"  [disabled]="fechaAprobada.invalid || calificacion.invalid" (click)="toogleFalta();">
               <span><b> Marcar no aprobado </b></span>
             </button>
           </div>
-          <h5 class="title">
-              Empleados inscritos:
-          </h5>
-          <p><b>Nomeclatura:</b></p>
-          <p><b>CP</b> :: Certificacion Previa</p>
-          <p><b>S.C.P</b> :: Sin Certificacion Previa</p>
+         
         </div>
         <div class="card-body">
+          <div class="row">
+            <div class="col-md-7 col-12">
+              <h5 class="title">
+                  Empleados inscritos:
+              </h5>
+              <p><b>Nomeclatura:</b></p>
+              <p><b>CP</b> :: Certificacion Previa</p>
+              <p><b>S.C.P</b> :: Sin Certificacion Previa</p>
+            </div>
+            <div class="col-md-5 col-12" *ngIf="cerrados">
+              <br><br>
+              <form (ngSubmit)="onSubmit()" [formGroup]=fechasForm #formDir="ngForm">
+                <div class="form-group">
+                  <label for="fechaAsistencia">Fecha de Asistencia</label>
+                  <input type="date" id="fechaAsistencia" class="form-control" required placeholder="Fecha" formControlName="fechaAsistencia">
+                </div>
+                <div *ngIf="fechaAsistencia.invalid && (fechaAsistencia.dirty || fechaAsistencia.touched)" class="alert alert-danger">
+                  <div *ngIf="fechaAsistencia.errors.required">
+                    Fecha requerida.
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-5 col-12" *ngIf="calificando">
+              <br><br>
+              <form (ngSubmit)="onSubmit()" [formGroup]=fechasForm #formDir="ngForm">
+                <div class="form-group">
+                  <label for="fechaAprobada">Fecha de Aprobacion</label>
+                  <input type="date" id="fechaAprobada" class="form-control" required placeholder="Fecha" formControlName="fechaAprobada">
+                </div>
+                <div *ngIf="fechaAprobada.invalid && (fechaAprobada.dirty || fechaAprobada.touched)" class="alert alert-danger">
+                  <div *ngIf="fechaAprobada.errors.required">
+                    Fecha requerida.
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="calificacion">Calificaci&oacute;n</label>
+                  <input type="text" id="calificacion" class="form-control" required placeholder="Calificaci&oacute;n" formControlName="calificacion">
+                </div>
+                <div *ngIf="calificacion.invalid && (calificacion.dirty || calificacion.touched)" class="alert alert-danger">
+                  <div *ngIf="calificacion.errors.required">
+                    Calificaci&oacute;n requerida.
+                  </div>
+                  <div *ngIf="capacidad.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-5 col-12" *ngIf="!cerrados && !calificando">
+            </div>
+          </div>
+          
           <ag-grid-angular 
             #agGrid
             id="myGrid"
@@ -170,6 +218,7 @@
             [colResizeDefault]="false"
             [suppressAutoSize]="true"
             [rowSelection]="rowSelection"
+            [rowClassRules]="rowClassRules"
             (selectionChanged)="onSelectionChanged($event)"
             (gridReady)="onGridReady($event)"
             >

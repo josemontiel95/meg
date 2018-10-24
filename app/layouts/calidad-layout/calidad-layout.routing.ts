@@ -18,15 +18,21 @@ import { TiposDeHerramientaComponent } from '../../calidad/tipos-de-herramienta/
 import { CrearTipoHerramientasComponent } from '../../calidad/crear-tipo-de-herramienta/crear-tipo-de-herramienta.component';
 import { TipoHerramientaDetailComponent } from '../../calidad/tipo-de-herramienta-detail/tipo-de-herramienta-detail.component';
 import { InsertarDocumentoComponent } from '../../calidad/insertar-documento/insertar-documento.component';
+import { InsertaComprobanteQRComponent } from '../../calidad/insertar-comprobanteQR/insertar-comprobanteQR.component';
+
 
 import { EquipoSeguridadComponent } from '../../calidad/equipoSeguridad/equipoSeguridad.component';
 import { CrearEquipoSeguridadComponent } from '../../calidad/crearEquipoSeguridad/crearEquipoSeguridad.component';
+import { CrearEquipoSeguridadLoteComponent } from '../../calidad/crearEquipoSeguridadLote/crearEquipoSeguridadLote.component';
 import { EquipoSeguridadDetailComponent } from '../../calidad/equipoSeguridadDetail/equipoSeguridadDetail.component';
+import { CertificacionesPorUsuarioComponent } from '../../calidad/certificacionesPorUsuario/certificacionesPorUsuario.component';
 
 export const CalidadLayoutRoutes: Routes = [
     { path: '',      		  redirectTo: 'user-profile', pathMatch: 'full' },
     { path: 'user-profile',   component: UserProfileComponent },
     
+
+    { path: 'certificacionesPorUsuarioComponent',           component: CertificacionesPorUsuarioComponent },
     { path: 'usuarios',           component: IconsComponent },
     { path: 'usuarios/user-detail/:id',   component: UserDetailComponent },
     { path: 'usuarios/crear-usuario',   component: CrearUsuarioComponent },
@@ -41,8 +47,8 @@ export const CalidadLayoutRoutes: Routes = [
     { path: 'salones/crear-salon',  component: CrearHerramientasComponent },
 
     { path: 'insertar-documento/:id/:id2',   component: InsertarDocumentoComponent },
-
     { path: 'insertar-foto/:id',   component: InsertarFotoComponent },
+    { path: 'insertar-comprobanteQR/:id/:id2',   component: InsertaComprobanteQRComponent },
 
 
     { path: 'certificaciones',  component: TiposDeHerramientaComponent },
@@ -51,6 +57,7 @@ export const CalidadLayoutRoutes: Routes = [
 
     { path: 'equipoSeguridad',  component: EquipoSeguridadComponent },
     { path: 'equipoSeguridad/creaEquipoSeguridad',  component: CrearEquipoSeguridadComponent },
+    { path: 'equipoSeguridad/creaEquipoSeguridadLote',  component: CrearEquipoSeguridadLoteComponent },
     { path: 'equipoSeguridad/equipoSeguridadDetail/:id',  component: EquipoSeguridadDetailComponent },
 
 ];

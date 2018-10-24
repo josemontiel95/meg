@@ -42,14 +42,14 @@ export class InsertarDocumentoComponent implements OnInit {
 	 	formData.append('uploadFile',      this.fileToUpload, this.fileToUpload.name);
     formData.append('function',        'upLoadDoc');
     formData.append('token',           this.global.token);
-    formData.append('rol_usuario_id',  '1001');
+    formData.append('rol_usuario_id',  '1002');
     formData.append('id_usuario',      this.id);
     formData.append('doc',             this.doc);
 	 	console.log(formData);
     let search = new HttpParams();
     search.set('function',             'upLoadDoc');
     search.set('token',                this.global.token);
-    search.set('rol_usuario_id',       '1001');
+    search.set('rol_usuario_id',       '1002');
     search.set('id_usuario',           this.id);
     search.set('doc',                  this.doc);
     this.crearMessageCargando="Cargando...";
@@ -75,7 +75,7 @@ export class InsertarDocumentoComponent implements OnInit {
       this.crearMessage=""
       this.crearMessageCargando=objeto.estatus;
       console.log(objeto);
-      setTimeout(()=>{ this.router.navigate(['administrador/usuarios/user-detail/'+this.id])}, 1500)
+      setTimeout(()=>{ this.router.navigate(['recursosHumanos/usuarios/user-detail/'+this.id])}, 1500)
        
     }else{
       this.crearMessageCargando="";

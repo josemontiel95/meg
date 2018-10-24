@@ -62,7 +62,7 @@
               <div class="col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="rol_usuario_id">Rol</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
-                  <select   class="form-control"  id="rol_usuario_id "required name="rol_usuario_id" placeholder="Puesto" formControlName="rol_usuario_id">
+                  <select   class="form-control"  id="rol_usuario_id "required name="rol_usuario_id" placeholder="Puesto" formControlName="rol_usuario_id" (change)="onChangeRol()">  
                     <option value=""  selected>Selecciona un rol...</option>
                     <option *ngFor="let puesto of mis_roles" [value]="puesto.id_rol_usuario">
                       {{puesto.rol}}
@@ -70,9 +70,33 @@
                   </select>
                   <div *ngIf="rol_usuario_id.invalid && (rol_usuario_id.dirty || rol_usuario_id.touched)" class="alert alert-danger">
                     <div *ngIf="rol_usuario_id.errors.required">
-                      Puesto requerido.
+                      Rol requerido.
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="noDeEmpleado">N.D.E.</label> 
+                  <input type="text" class="form-control" id="noDeEmpleado" required name="noDeEmpleado" placeholder="N&uacute;mero de empleado" formControlName="noDeEmpleado" >
+                </div>
+                <div *ngIf="noDeEmpleado.invalid && (noDeEmpleado.dirty || noDeEmpleado.touched)" class="alert alert-danger">
+                  <div *ngIf="noDeEmpleado.errors.required">
+                    N.D.E. requerido.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12 ">
+                <div class="form-group">
+                  <label for="puesto_id">Puesto</label> <!--tipo de credencial referido a puestos tales como jefe de laboratorio-->
+                  <select   class="form-control"  id="puesto_id " name="puesto_id" placeholder="Puesto" formControlName="puesto_id">
+                    <option value="NULL"  selected>Selecciona un puesto...</option>
+                    <option *ngFor="let puesto of mis_puestos" [value]="puesto.id_puesto">
+                      {{puesto.puesto}}
+                    </option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -104,9 +128,8 @@
               <div class="col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="emailPersonal">Correo Electronico Personal</label>
-                  <input type="text" id="emailPersonal"   required   class="form-control" name="emailPersonal" placeholder="mail@lacocs.com" formControlName="emailPersonal" >
+                  <input type="text" id="emailPersonal"   class="form-control" name="emailPersonal" placeholder="mail@lacocs.com" formControlName="emailPersonal" >
                   <div *ngIf="emailPersonal.errors && (emailPersonal.dirty || emailPersonal.touched)"class="alert alert-danger">
-                    <div *ngIf="emailPersonal.errors.required">Correo requerido.</div>
                     <div *ngIf="emailPersonal.errors.pattern">El correo debe contener @</div>
                   </div>
                 </div>
@@ -137,17 +160,12 @@
               <div class=" col-md-6 col-12 ">
                 <div class="form-group">
                   <label for="pm_id">Project Manager</label>
-                  <select class="form-control"  id="pm_id" required name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
-                    <option value="" selected>Selecciona un pm...</option>
+                  <select class="form-control"  id="pm_id" name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
+                    <option value="NULL" selected>Selecciona un pm...</option>
                     <option *ngFor="let pm of mis_pm" [value]="pm.id_usuario">
                       {{pm.nombre}}
                     </option>
                   </select>                  
-                  <div *ngIf="pm_id.invalid && (pm_id.dirty || pm_id.touched)" class="alert alert-danger">            
-                    <div *ngIf="pm_id.errors.required">
-                      Project Manager requerido.
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -155,32 +173,33 @@
               <div class="col-md-6  col-12 ">
                 <div class="form-group">
                   <label for="empresa_id">Empresa</label> 
-                  <select class="form-control"  id="empresa_id" required name="empresa_id" placeholder="Laboratorio" formControlName="empresa_id">
-                    <option value="" selected>Selecciona una empresa...</option>
+                  <select class="form-control"  id="empresa_id" name="empresa_id" placeholder="Laboratorio" formControlName="empresa_id">
+                    <option value="NULL" selected>Selecciona una empresa...</option>
                     <option *ngFor="let emp of mis_emp" [value]="emp.id_empresa">
                       {{emp.nombre}}
                     </option>
                   </select>
-                  <div *ngIf="empresa_id.invalid && (empresa_id.dirty || empresa_id.touched)" class="alert alert-danger">
-                    <div *ngIf="empresa_id.errors.required">
-                      Empresa requerido.
-                    </div>
-                  </div>
                 </div>
               </div>
               <div class="col-md-6  col-12 ">
                 <div class="form-group">
                   <label>Tipo</label>
-                  <select class="form-control"  id="tipo" required name="tipo" placeholder="Laboratorio" formControlName="tipo">
+                  <select class="form-control"  id="tipo" name="tipo" placeholder="Laboratorio" formControlName="tipo">
                     <option value="" selected>Selecciona un tipo...</option>
                     <option *ngFor="let tipo of tipos" [value]="tipo.id">
                       {{tipo.tipo}}
                     </option>
                   </select>                  
-                  <div *ngIf="tipo.invalid && (tipo.dirty || tipo.touched)" class="alert alert-danger">            
-                    <div *ngIf="tipo.errors.required">
-                      Tipo requerido.
-                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 col-12 ">
+                <div class="form-group">
+                  <label for="fechaInicio">Fecha de ingreso</label>
+                  <input type="date" id="fechaInicio"   required   class="form-control" name="fechaInicio" placeholder="mail@lacocs.com" formControlName="fechaInicio" >
+                  <div *ngIf="fechaInicio.errors && (fechaInicio.dirty || fechaInicio.touched)"class="alert alert-danger">
+                    <div *ngIf="fechaInicio.errors.required">Fecha de ingreso requerida.</div>
                   </div>
                 </div>
               </div>

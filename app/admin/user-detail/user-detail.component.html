@@ -67,17 +67,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="emailPersonal">Correo Electronico Personal</label>
-                  <input type="text" id="emailPersonal"   required   class="form-control" name="emailPersonal" placeholder="mail@lacocs.com" formControlName="emailPersonal" >
-                  <div *ngIf="emailPersonal.errors && (emailPersonal.dirty || emailPersonal.touched)"class="alert alert-danger">
-                    <div *ngIf="emailPersonal.errors.required">Correo requerido.</div>
-                    <div *ngIf="emailPersonal.errors.pattern">El correo debe contener @</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-12 ">
+              <div class="col-md-12 col-12 ">
                 <div class="form-group">
                   <label for="emailCorporativo">Correo Electronico Coorporativo</label>
                   <input type="text" id="emailCorporativo"   required   class="form-control" name="emailCorporativo" placeholder="mail@lacocs.com" formControlName="emailCorporativo" >
@@ -88,96 +78,7 @@
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="curpNo">CURP</label>
-                  <input type="text" id="curpNo"  required   name="curpNo" class="form-control" placeholder="CURP" formControlName="curpNo" >
-                  <div *ngIf="curpNo.invalid && (curpNo.dirty || curpNo.touched)" class="alert alert-danger">            
-                    <div *ngIf="curpNo.errors.required">
-                      CURP requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class=" col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="rfcNo">RFC</label>
-                  <input type="text" id="rfcNo"  required name="rfcNo" class="form-control" placeholder="RFC" formControlName="rfcNo" >
-                  <div *ngIf="rfcNo.invalid && (rfcNo.dirty || rfcNo.touched)" class="alert alert-danger">            
-                    <div *ngIf="rfcNo.errors.required">
-                      RFC requerido.
-                    </div>
-                    <div *ngIf="rfcNo.errors.pattern">
-                      Verifica tu R.F.C , recuerda que el R.F.C de personas físicas esta compuesto de 4 caracteres alfanuméricos, mas 6 numeros  y 3 carateres nuevamente alfanuméicos
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 col-12">
-                <div class="form-group">
-                  <label for="imssNo">N&uacute;mero de IMSS</label>
-                  <input type="text" id="imssNo"  required   name="imssNo" class="form-control" placeholder="IMSS" formControlName="imssNo" >
-                  <div *ngIf="imssNo.invalid && (imssNo.dirty || imssNo.touched)" class="alert alert-danger">            
-                    <div *ngIf="imssNo.errors.required">
-                      N&uacute;mero de IMSS requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class=" col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="pm_id">Project Manager</label>
-                  <select class="form-control"  id="pm_id" required name="pm_id" placeholder="Laboratorio" formControlName="pm_id">
-                    <option value="" selected>Selecciona un pm...</option>
-                    <option *ngFor="let pm of mis_pm" [value]="pm.id_usuario">
-                      {{pm.nombre}}
-                    </option>
-                  </select>                  
-                  <div *ngIf="pm_id.invalid && (pm_id.dirty || pm_id.touched)" class="alert alert-danger">            
-                    <div *ngIf="pm_id.errors.required">
-                      Project Manager requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6  col-12 ">
-                <div class="form-group">
-                  <label for="empresa_id">Empresa</label> 
-                  <select class="form-control"  id="empresa_id" required name="empresa_id" placeholder="Laboratorio" formControlName="empresa_id">
-                    <option value="Selecciona una empresa..." selected>Selecciona una empresa...</option>
-                    <option *ngFor="let emp of mis_emp" [value]="emp.id_empresa">
-                      {{emp.nombre}}
-                    </option>
-                  </select>
-                  <div *ngIf="empresa_id.invalid && (empresa_id.dirty || empresa_id.touched)" class="alert alert-danger">
-                    <div *ngIf="empresa_id.errors.required">
-                      Empresa requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6  col-12 ">
-                <div class="form-group">
-                  <label>Tipo</label>
-                  <select class="form-control"  id="tipo" required name="tipo" placeholder="Laboratorio" formControlName="tipo">
-                    <option selected>Selecciona un tipo...</option>
-                    <option *ngFor="let tipo of tipos" [value]="tipo.id">
-                      {{tipo.tipo}}
-                    </option>
-                  </select>                  
-                  <div *ngIf="tipo.invalid && (tipo.dirty || tipo.touched)" class="alert alert-danger">            
-                    <div *ngIf="tipo.errors.required">
-                      Tipo requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <div class="btn-group"  style="float: right; padding-right: 10%;">
               <button class="btn btn-info" *ngIf="hidden == true"  (click)="mostrar()">
                 <span><b> Cambiar Datos. </b></span>
@@ -199,7 +100,7 @@
         <div class="card-body">
           <div class="author">
             <img class="avatar border-gray" src="{{this.imgUrl}}" (click)="subirFoto()" alt="...">
-            <h5 class="title">{{this.userForm.value.nombre + ' '+ this.userForm.value.apellido}}</h5>
+            <h5 class="title">{{this.userForm.getRawValue().nombre + ' '+ this.userForm.getRawValue().apellido}}</h5>
             <p class="description">
               {{this.userForm.value.rol}}
             </p>
@@ -242,156 +143,7 @@
     </div>
 
 
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="title">Ficha m&eacute;dica</h5>
-        </div>
-        <div class="card-body">
-          <p>Esta informaci&oacute;n es editable solo por el personal de recursos humanos.</p>
-          <form (ngSubmit)="onSubmit()" [formGroup]=medicCardForm #formDir="ngForm">
-            <div class="row">
-              <div class="col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="tipoSangre">Tipo de Sangre</label>
-                  <select class="form-control"  id="tipoSangre" required  placeholder="Laboratorio" formControlName="tipoSangre">
-                    <option selected>Selecciona un tipo...</option>
-                    <option *ngFor="let sangre of sangres" [value]="sangre.id">
-                      {{sangre.tipo}}
-                    </option>
-                  </select>   
-                  <div *ngIf="tipoSangre.invalid && (tipoSangre.dirty || tipoSangre.touched)" class="alert alert-danger">            
-                    <div *ngIf="tipoSangre.errors.required">
-                      Tipo de Sangre requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
+   
 
-              <div class=" col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="fechaDeNac">Fecha de nacimiento</label>
-                  <input type="date" id="fechaDeNac"  required name="fechaDeNac" class="form-control" placeholder="yyyy/mm/dd" formControlName="fechaDeNac" >
-                  <div *ngIf="fechaDeNac.invalid && (fechaDeNac.dirty || fechaDeNac.touched)" class="alert alert-danger">            
-                    <div *ngIf="fechaDeNac.errors.required">
-                      Fecha de nacimiento requerida.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class=" col-md-12 col-12 ">
-                <div class="form-group">
-                  <label for="alergias">Alergias</label>
-                  <textarea  id="alergias"    class="form-control" formControlName="alergias" > </textarea>
-                  <div *ngIf="alergias.invalid && (alergias.dirty || alergias.touched)" class="alert alert-danger">            
-                    <div *ngIf="alergias.errors.required">
-                      Alergias requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class=" col-md-12 col-12 ">
-                <div class="form-group">
-                  <label for="conEmerNombre">Nombre del contacto de emergencia</label>
-                  <input type="text" id="conEmerNombre"  required name="conEmerNombre" class="form-control" placeholder="Nombre" formControlName="conEmerNombre" >
-                  <div *ngIf="conEmerNombre.invalid && (conEmerNombre.dirty || conEmerNombre.touched)" class="alert alert-danger">            
-                    <div *ngIf="conEmerNombre.errors.required">
-                      Nombre del contacto de emergencia requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="conEmerParentesco">Parentesco</label>
-                  <input type="text" id="conEmerParentesco"  required   name="conEmerParentesco" class="form-control" placeholder="Parentesco" formControlName="conEmerParentesco" >
-                  <div *ngIf="conEmerParentesco.invalid && (conEmerParentesco.dirty || conEmerParentesco.touched)" class="alert alert-danger">            
-                    <div *ngIf="conEmerParentesco.errors.required">
-                      Parentesco requerido.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class=" col-md-6 col-12 ">
-                <div class="form-group">
-                  <label for="conEmerTelefono">Tel&eacute;fono del contacto de emergencia</label>
-                  <input type="text" id="conEmerTelefono"  required name="conEmerTelefono" class="form-control" placeholder="Tel&eacute;fono" formControlName="conEmerTelefono" >
-                  <div *ngIf="conEmerTelefono.invalid && (conEmerTelefono.dirty || conEmerTelefono.touched)" class="alert alert-danger">            
-                    <div *ngIf="conEmerTelefono.errors.required">
-                      Tel&eacute;fono del contacto de emergencia requerido.
-                    </div>
-                    <div *ngIf="conEmerTelefono.errors.pattern">Tel&eacute;fono solo debe contener numeros</div>              
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12 col-12 ">
-                <div class="form-group">
-                  <label for="observacionesMedicas">Obervaciones m&eacute;dicas</label>
-                  <textarea  id="observacionesMedicas"     class="form-control" formControlName="observacionesMedicas" > </textarea>
-                  <div *ngIf="observacionesMedicas.errors && (observacionesMedicas.dirty || observacionesMedicas.touched)"class="alert alert-danger">
-                    <div *ngIf="observacionesMedicas.errors.required">Obervaciones m&eacute;dicas requeridas.</div>
-                  </div>
-                </div>
-              </div>            
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="title">Documentos</h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-4 col-12 ">
-              <p style="text-align: center;"><b>INE</b></p>
-              <img class="imageDoc" [src]="this.ineIcon" (click)="abrirINE()" alt="...">
-              <br>
-            </div>
-            <div class="col-md-4 col-12 ">
-              <p style="text-align: center;"><b>Licencia</b></p>
-              <img class="imageDoc" [src]="this.licenciaIcon" (click)="abrirLicencia()" alt="...">
-              <br>
-            </div>
-            <div class="col-md-4 col-12 ">
-              <p style="text-align: center;"><b>CURP</b></p>
-              <img class="imageDoc" [src]="this.curpIcon" (click)="abrirCURP()" alt="...">
-              <br>
-            </div>
-          </div>
-          <hr>
-          <div class="row">
-            <div class="col-md-4 col-12 ">
-              <p style="text-align: center;"><b>RFC</b></p>
-              <img class="imageDoc" [src]="this.rfcIcon" (click)="abrirRFC()" alt="...">
-              <br>
-            </div>
-            <div class="col-md-4 col-12 ">
-              <p style="text-align: center;"><b>IMSS</b></p>
-              <img class="imageDoc" [src]="this.imssIcon" (click)="abrirIMSS()" alt="...">
-              <br>
-            </div>
-            <div class="col-md-4 col-12 ">
-              <p style="text-align: center;"><b>Contrato</b></p>
-              <img class="imageDoc" [src]="this.contratoIcon" (click)="abrirContrato()" alt="...">
-              <br>
-            </div>
-          </div>
-          <hr>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

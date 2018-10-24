@@ -33,6 +33,11 @@ import { SalonUsuarioDetailComponent } from '../../calidad/salon-user-detail/sal
 import { EquipoSeguridadComponent } from '../../calidad/equipoSeguridad/equipoSeguridad.component';
 import { CrearEquipoSeguridadComponent } from '../../calidad/crearEquipoSeguridad/crearEquipoSeguridad.component';
 import { EquipoSeguridadDetailComponent } from '../../calidad/equipoSeguridadDetail/equipoSeguridadDetail.component';
+import { InsertaComprobanteQRComponent } from '../../calidad/insertar-comprobanteQR/insertar-comprobanteQR.component';
+import { CertificacionesPorUsuarioComponent } from '../../calidad/certificacionesPorUsuario/certificacionesPorUsuario.component';
+import { CrearEquipoSeguridadLoteComponent } from '../../calidad/crearEquipoSeguridadLote/crearEquipoSeguridadLote.component';
+
+
 @NgModule({
   imports: [
     CommonModule,
@@ -70,7 +75,10 @@ import { EquipoSeguridadDetailComponent } from '../../calidad/equipoSeguridadDet
     SalonUsuarioDetailComponent,
     EquipoSeguridadComponent,
     CrearEquipoSeguridadComponent,
-    EquipoSeguridadDetailComponent
+    EquipoSeguridadDetailComponent,
+    InsertaComprobanteQRComponent,
+    CertificacionesPorUsuarioComponent,
+    CrearEquipoSeguridadLoteComponent
 
   ]
 })

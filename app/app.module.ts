@@ -17,6 +17,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { CalidadLayoutComponent } from './layouts/calidad-layout/calidad-layout.component';
 import { RhInternoLayoutComponent } from './layouts/rhInterno-layout/rhInterno-layout.component';
+import { ProjectManagerComponent } from './layouts/projectManager-layout/projectManager-layout.component';
 
 
 import { DataTablesModule } from 'angular-datatables';
@@ -49,6 +50,7 @@ import { MatProgressBarModule } from '@angular/material';
     AdminLayoutComponent,
     CalidadLayoutComponent,
     RhInternoLayoutComponent,
+    ProjectManagerComponent,
     LoginComponent,
     UserProfileComponent
   ],

@@ -8,35 +8,22 @@
 </div>
 <div class="main-content">
   <div class="row">
-   <div class="col-md-12 col-12">
-      <div class="card">
-        <div class="card-header" *ngIf="opciones">
-          <h4 class="card-title">Certificaciones a contemplar</h4>
-        </div>
-        <div class="card-body">
-          <div class="row" *ngIf="opciones">
-            <app-certificaciones-grid (cargando)="cambiaCargando($event)" (reloadMainGrid)="reloadMainGrid()"></app-certificaciones-grid>
-          </div>
-          <div class="" (click)="masOpciones();">
-            <hr *ngIf="opciones">
-            <div class="btn-group" style="display: flex;align-items: center; justify-content: center;">
-              <p>{{opcionesMessage}}</p>
-            </div>
-            <div class="btn-group" style="display: flex;align-items: center; justify-content: center;">
-                <i _ngcontent-c25="" [ngClass]="{'now-ui-icons':true,'arrows-1_minimal-down':!this.opciones ,'arrows-1_minimal-up': this.opciones,'pr-3':true}" ></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
    <div class="col-md-12">
       <div class="card">
         <div class="card-header">
           <div class="btn-group" style="float: right; padding-right: 5%;">
             <button class="btn btn-success" (click)="crearUsuario();">
               <span><b> Nuevo Usuario </b></span>
+            </button>
+          </div>
+          <div class="btn-group" style="float: right; padding-right: 5%;">
+            <button class="btn btn-default" (click)="quitarHistorial();" *ngIf="historial">
+              <span><b> regresar </b></span>
+            </button>
+          </div>
+          <div class="btn-group" style="float: right; padding-right: 5%;">
+             <button class="btn btn-info" (click)="cargarHistorial();" *ngIf="!historial">
+              <span><b> Mostrar todos </b></span>
             </button>
           </div>
           <h4 class="card-title"> Usuarios: </h4>
@@ -106,8 +93,6 @@
               <div class="col-md-3">
                 <div class="row" align="center">
                     <button type="button" class="btn btn-default btn-round" (click)="detalleUsuario();">Detalles</button>
-                    <button type="button" class="btn btn-danger btn-round " (click)="desactivarUsuario()" *ngIf="desBut">Desactivar</button>
-                    <button type="button" class="btn btn-success btn-round " (click)="activarUsuario()" *ngIf="actBut">Activar</button>
                 </div>
                 <div id="MenosDetalles">
                   <div class="row">

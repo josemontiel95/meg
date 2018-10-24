@@ -33,14 +33,13 @@ export class IconsComponent implements OnInit{
   constructor( private http: Http, private router: Router, private data: DataService, private route: ActivatedRoute){
 	  this.columnDefs = [
       {headerName: 'Ctrl', field: 'id_usuario' },
+      {headerName: 'N.D.E.', field: 'noDeEmpleado' },
       {headerName: 'Nombre', field: 'nombre' },
       {headerName: 'Email coorporativo', field: 'emailCorporativo' },
-      {headerName: 'Fecha de Nacimiento', field: 'fechaDeNac' },
       {headerName: 'Rol', field: 'rol' },
       {headerName: 'Certificacion por vencer', field: 'certificacion'},
       {headerName: 'Estado', field: 'estado'},
-      {headerName: 'Activo', field: 'active' },
-
+      {headerName: 'Activo', field: 'active' }
     ];
     this.rowSelection = "single";
     this.rowClassRules = {
@@ -70,11 +69,51 @@ export class IconsComponent implements OnInit{
   rowData: any;
 
   ngOnInit() {
+    this.data.currentGlobal.subscribe(global => this.global = global);
+
     this.route.params.subscribe( params => this.id=params.id );
     this.cargando=1;
+
+    let url = `${this.global.apiRoot}/certificaciones/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getIsItUpToDate');
+    search.set('token', this.global.token);
+    search.set('rol_usuario_id',     '1004');
+    this.http.get(url, {search}).subscribe(res => {
+      this.validateUpToDate(res.json());
+    });
+
+    
   }
-
-
+  validateUpToDate(res){
+    console.log("validateUpToDate :: res:");
+    console.log(res);
+    if(res.uptodate==0){
+      window.alert("Hola "+res.nombre+". La última vez que se actualizó la informacion con base en tus ajustes personales fue el "+res.lastEditedON+". Actualizaremos la información ahora. Esto puede tomar varios segundos.");
+      this.recalculaEstados();
+    }
+  }
+  recalculaEstados(){
+    this.cargando=this.cargando+1;
+    let url = `${this.global.apiRoot}/certificaciones/post/endpoint.php`;
+    let formData:FormData = new FormData();
+    formData.append('function',           'recalculaEstados');
+    formData.append('token',              this.global.token);
+    formData.append('rol_usuario_id',     '1004');
+    this.http.post(url, formData).subscribe(res => this.respuestaRecalculaEdos(res.json()) );
+  }
+  respuestaRecalculaEdos(resp: any){
+    console.log("respuestaRecalculaEdos :: res:");
+    console.log(resp);
+    this.cargando=this.cargando-1;
+    if(resp.error!=0){
+      window.alert(resp.estatus);
+      window.alert(resp.error);
+      location.reload();
+    }else{
+      this.reloadMainGrid();
+    }
+  }
   crearUsuario(){
     this.router.navigate(['calidad/usuarios/crear-usuario']);
   }
@@ -99,10 +138,10 @@ export class IconsComponent implements OnInit{
     search.set('function', 'getAllCalidad');
     search.set('token', this.global.token);
     this.http.get(url, {search}).subscribe(res => {
-                                            console.log(res.json());
-                                            this.llenaTabla(res.json());
-                                            this.gridApi.sizeColumnsToFit();
-                                          });
+      console.log(res.json());
+      this.llenaTabla(res.json());
+      this.gridApi.sizeColumnsToFit();
+    });
   }
   reloadMainGrid(){
     this.cargando=1;

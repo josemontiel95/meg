@@ -23,7 +23,8 @@ export const ROUTES: RouteInfo[] = [
     ];
 
 export const ROUTES2: RouteInfo2[] = [
-    { path: 'proyectos', title: 'Empresas',  icon:'files_single-copy-04', class: '' },
+    { path: 'empresas', title: 'Empresas',  icon:'files_single-copy-04', class: '' },
+    { path: 'puestos', title: 'Puestos',  icon:'business_badge', class: '' },
    //{ path: 'tipos-de-herramienta', title: 'Tipos de Herramienta',  icon:'now-ui-icons ui-2_settings-90', class: '' },
    //{ path: 'herramientas', title: 'Herramienta',  icon:'now-ui-icons ui-2_settings-90', class: '' },
    //{ path: 'usuarios', title: 'Usuarios',  icon:'users_single-02', class: '' },

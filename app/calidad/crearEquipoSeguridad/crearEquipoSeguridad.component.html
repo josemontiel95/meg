@@ -11,75 +11,50 @@
           </h5>
         </div>
         <div class="card-body">
-          <form (ngSubmit)="onSubmit()"  [formGroup]=certificacionesForm #formDir="ngForm">
+          <form (ngSubmit)="onSubmit()"  [formGroup]=equipoForm #formDir="ngForm">
             <div class="row">
-              <div class="col-md-12 col-12">
+              <div class="col-md-6 col-12">
                 <div class="form-group">
-                  <label for="certificacion">Nombre</label>
-                  <input type="text" id="certificacion" class="form-control" required placeholder="Nombre" formControlName="certificacion">
+                  <label for="nombre">Nombre</label>
+                  <input type="text" id="nombre" class="form-control" required placeholder="Nombre" formControlName="nombre">
                 </div>
-                <div *ngIf="certificacion.invalid && (certificacion.dirty || certificacion.touched)" class="alert alert-danger">
-                  <div *ngIf="certificacion.errors.required">
+                <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="alert alert-danger">
+                  <div *ngIf="nombre.errors.required">
                     Nombre requerido.
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row">
               <div class="col-md-6 col-12">
                 <div class="form-group">
-                  <label for="certificacion">N&uacute;mero de serie</label>
-                  <input type="text" id="certificacion" class="form-control" required placeholder="Nombre" formControlName="certificacion">
+                  <label for="noDeSerie">N&uacute;mero de serie</label>
+                  <input type="text" id="noDeSerie" class="form-control" required placeholder="N&uacute;mero de serie" formControlName="noDeSerie">
                 </div>
-                <div *ngIf="certificacion.invalid && (certificacion.dirty || certificacion.touched)" class="alert alert-danger">
-                  <div *ngIf="certificacion.errors.required">
+                <div *ngIf="noDeSerie.invalid && (noDeSerie.dirty || noDeSerie.touched)" class="alert alert-danger">
+                  <div *ngIf="noDeSerie.errors.required">
                     Número de Serie requerido.
                   </div>
                 </div>
               </div>
-              <div class="col-md-6 col-12">
-                <div class="form-group">
-                  <label for="certificacion">Fecha de Fabricaci&oacute;n</label>
-                  <input type="text" id="certificacion" class="form-control" required placeholder="Nombre" formControlName="certificacion">
-                </div>
-                <div *ngIf="certificacion.invalid && (certificacion.dirty || certificacion.touched)" class="alert alert-danger">
-                  <div *ngIf="certificacion.errors.required">
-                    Fecha de Fabricación requerida.
-                  </div>
-                </div>
-              </div>
             </div>
             <div class="row">
               <div class="col-md-6 col-12">
                 <div class="form-group">
-                  <label for="certificacion">Costo</label>
-                  <input type="text" id="certificacion" class="form-control" required placeholder="Nombre" formControlName="certificacion">
+                  <label for="costo">Costo</label>
+                  <input type="text" id="costo" class="form-control" required placeholder="Costo" formControlName="costo">
                 </div>
-                <div *ngIf="certificacion.invalid && (certificacion.dirty || certificacion.touched)" class="alert alert-danger">
-                  <div *ngIf="certificacion.errors.required">
+                <div *ngIf="costo.invalid && (costo.dirty || costo.touched)" class="alert alert-danger">
+                  <div *ngIf="costo.errors.required">
                     Costo requerido.
                   </div>
+                  <div *ngIf="costo.errors.pattern">
+                    Costo solo debe contener decimales (precisi&oacute;n a centecimas) o enteros
+                  </div>
                 </div>
               </div>
               <div class="col-md-6 col-12">
                 <div class="form-group">
-                  <label for="diasValidos">Dias v&aacute;lidos</label>
-                  <input type="text" id="diasValidos" class="form-control" placeholder="" required formControlName="diasValidos">
-                </div>
-                <div *ngIf="diasValidos.invalid && (diasValidos.dirty || diasValidos.touched)" class="alert alert-danger">
-                  <div *ngIf="diasValidos.errors.required">
-                    Este campo es requerido requerido.
-                  </div>
-                  <div *ngIf="diasValidos.errors.pattern">
-                    Este campo es num&eacute;rico
-                  </div>
-                </div>
-              </div>
-              <!-- 
-              <div class="col-md-6 col-12">
-                <div class="form-group">
-                  <label for="aprobable">¿Requiere aprobaci&oacute;n?</label>
-                  <select class="form-control"  id="aprobable" required name="id_concretera" formControlName="aprobable" >
+                  <label for="aprobable">¿Caduca?</label>
+                  <select class="form-control"  id="aprobable" required name="id_concretera" formControlName="aprobable" (change)="onChangeAprobable()">
                     <option value=""  selected >Selecciona...</option>
                     <option value="0"  >No</option>
                     <option value="1"  >Si</option>                   
@@ -90,13 +65,40 @@
                     Este campo es requerido requerido.
                   </div>
                 </div>
-              </div> -->
+              </div> 
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="fechaDeFrabricacion">Fecha de Fabricaci&oacute;n</label>
+                  <input type="date" id="fechaDeFrabricacion" class="form-control" required placeholder="Fecha de Fabricaci&oacute;n" formControlName="fechaDeFrabricacion">
+                </div>
+                <div *ngIf="fechaDeFrabricacion.invalid && (fechaDeFrabricacion.dirty || fechaDeFrabricacion.touched)" class="alert alert-danger">
+                  <div *ngIf="fechaDeFrabricacion.errors.required">
+                    Fecha de Fabricación requerida.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="diasValidos">Dias v&aacute;lidos</label>
+                  <input type="text" id="diasValidos" class="form-control" placeholder="Dias v&aacute;lidos" required formControlName="diasValidos">
+                </div>
+                <div *ngIf="diasValidos.invalid && (diasValidos.dirty || diasValidos.touched)" class="alert alert-danger">
+                  <div *ngIf="diasValidos.errors.required">
+                    Este campo es requerido requerido.
+                  </div>
+                  <div *ngIf="diasValidos.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="row">
               <div class="col-md-6 col-12">
                 <div class="form-group">
                   <label for="diasAmarillos">Dias amarillos</label>
-                  <input type="text" id="diasAmarillos" class="form-control" required placeholder="" formControlName="diasAmarillos">
+                  <input type="text" id="diasAmarillos" class="form-control" required placeholder="Dias amarillos" formControlName="diasAmarillos">
                 </div>
                 <div *ngIf="diasAmarillos.invalid && (diasAmarillos.dirty || diasAmarillos.touched)" class="alert alert-danger">
                   <div *ngIf="diasAmarillos.errors.required">
@@ -110,7 +112,7 @@
               <div class="col-md-6 col-12">
                 <div class="form-group">
                   <label for="diasRojos">Dias rojos</label>
-                  <input type="text" id="diasRojos" class="form-control" required placeholder="Nombre" formControlName="diasRojos">
+                  <input type="text" id="diasRojos" class="form-control" required placeholder="Dias rojos" formControlName="diasRojos">
                 </div>
                 <div *ngIf="diasRojos.invalid && (diasRojos.dirty || diasRojos.touched)" class="alert alert-danger">
                   <div *ngIf="diasRojos.errors.required">
@@ -122,21 +124,8 @@
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-12 col-12">
-                <div class="form-group">
-                  <label for="descripcion">Descripci&oacute;n</label>
-                  <textarea type="text" id="descripcion" class="form-control" required formControlName="descripcion"> </textarea>
-                </div>
-                <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)" class="alert alert-danger">
-                  <div *ngIf="descripcion.errors.required">
-                    Descrioci&oacute;n requerida.
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="btn-group"  style="float: right; padding-right: 10%;">
-              <button class="btn btn-success"  [disabled]="certificacionesForm.invalid" (click)="crearCertificacion();">
+              <button class="btn btn-success"  [disabled]="equipoForm.invalid" (click)="crearCertificacion();">
                 <span><b> Guardar Cambios </b></span>
               </button>
             </div>

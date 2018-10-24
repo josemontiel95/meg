@@ -21,7 +21,7 @@ import { InsertarDocumentoComponent } from '../../admin/insertar-documento/inser
 
 
 export const AdminLayoutRoutes: Routes = [
-    { path: '',      		  redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: '',                redirectTo: 'user-profile', pathMatch: 'full' },
     { path: 'dashboard',      component: DashboardComponent },
     { path: 'user-profile',   component: UserProfileComponent },
     

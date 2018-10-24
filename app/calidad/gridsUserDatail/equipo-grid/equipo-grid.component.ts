@@ -20,11 +20,13 @@ export class EquipoGridComponent implements OnInit  {
   columnDefs;
   id: any;
   historial=false;
+  asignar=false;
   rowClassRules;
 
   constructor( private http: Http, private router: Router, private data: DataService, private route: ActivatedRoute){
 	  this.columnDefs = [
-    {headerName: 'Ctrl', field: 'id_equipoDeSeguridad' },    
+    {headerName: 'Ctrl', field: 'id_equipoDeSeguridad' }, 
+    {headerName: 'N.D.S.', field: 'noDeSerie' },
     {headerName: 'Nombre', field: 'nombre' },
     {headerName: 'Equipo', field: 'estadoE' },
     {headerName: 'Asignacion', field: 'estadoEsE' },
@@ -33,7 +35,7 @@ export class EquipoGridComponent implements OnInit  {
     {headerName: 'Estado', field: 'estado'},
       
     ];
-    this.rowSelection = "multiple";
+    this.rowSelection = "single";
     this.rowClassRules = {
       "row-green-warning": function(params) {
         var color = params.data.color;
@@ -64,7 +66,7 @@ export class EquipoGridComponent implements OnInit  {
  
 
   onGridReady(params) {
-
+    this.cambiaCargando(1);
     this.data.currentGlobal.subscribe(global => this.global = global);
     this.route.params.subscribe( params => this.id=params.id);
     this.gridApi = params.api;
@@ -83,19 +85,16 @@ export class EquipoGridComponent implements OnInit  {
                                             this.gridApi.sizeColumnsToFit();
                                           });
   }
-    @Input( ) idh: any;
 
-    @Output() agregaHerra = new EventEmitter<any>();
+  @Output() cargando = new EventEmitter<any>();
 
-  agregaHerr(ids: any) {
-    this.agregaHerra.emit(ids);
-    //this.id= h
-    console.log(ids);
-
+  cambiaCargando(cantidad: any) {
+    this.cargando.emit(cantidad);
   }
 
   historialCompleto(){
     this.historial=true;
+    this.cambiaCargando(1);
     let url = `${this.global.apiRoot}/equipo/get/endpoint.php`;
     let search = new URLSearchParams();
     search.set('function', 'getFullEquipoByID');
@@ -109,12 +108,12 @@ export class EquipoGridComponent implements OnInit  {
                                             this.gridApi.sizeColumnsToFit();
                                           });
   }
-
-  historialActual(){
-    this.historial=false;
+  disponibleCompleto(){
+    this.asignar=true;
+    this.cambiaCargando(1);
     let url = `${this.global.apiRoot}/equipo/get/endpoint.php`;
     let search = new URLSearchParams();
-    search.set('function', 'getEquipoByID');
+    search.set('function', 'getAllEquipoDisponibleCalidad');
     search.set('token', this.global.token);
     search.set('rol_usuario_id', this.global.rol);
     search.set('id_usuario', this.id);
@@ -126,29 +125,102 @@ export class EquipoGridComponent implements OnInit  {
                                           });
   }
 
+  historialActual(){
+    this.historial=false;
+    this.asignar=false;
+    this.cambiaCargando(1);
+    let url = `${this.global.apiRoot}/equipo/get/endpoint.php`;
+    let search = new URLSearchParams();
+    search.set('function', 'getEquipoByID');
+    search.set('token', this.global.token);
+    search.set('rol_usuario_id', this.global.rol);
+    search.set('id_usuario', this.id);
+    console.log(search);
+    this.http.get(url, {search}).subscribe(res => {
+                                            console.log(res.json());
+                                            this.llenaTabla(res.json());
+                                          });
+  }
+
 
 
   llenaTabla(repuesta: any){
+    this.cambiaCargando(-1);
     console.log(repuesta)
 
-    if(repuesta.error==1 || repuesta.error==2 || repuesta.error==3){
-      window.alert(repuesta.estatus);
-      this.router.navigate(['login']);
+    if(repuesta.registros==0){
+        this.rowData="";
     }else{
-      this.rowData =repuesta;
+      this.rowData= repuesta;
+      this.gridApi.sizeColumnsToFit();
     }
   }
 
    
  onSelectionChanged(event: EventListenerObject){
     var selectedRows = this.gridApi.getSelectedRows();
-    var id = []; //array
-    var i =0 ;
+    var id =""; //array
+    var estadoEsEnum ="";
     selectedRows.forEach(function(selectedRow, index) {
-      id.push(selectedRow.id_herramienta);
-      
+      id= selectedRow.id_equipoDeSeguridad;
+      estadoEsEnum= selectedRow.estadoEsEnum;
     });
-      this.agregaHerr(id);
+    if(this.asignar){
+      switch(estadoEsEnum){
+        case "1":
+          if(window.confirm("¿Estas seguro que quieres desasignar esta herramienta?")){
+            this.cambiarAsignacion(id,0);
+          }else{
+
+          }
+        break;
+        case "0":
+          if(window.confirm("¿Estas seguro que quieres volver a asignar esta herramienta?")){
+            this.cambiarAsignacion(id,1);
+          }else{
+
+          }
+        break;
+        case "-1":
+          if(window.confirm("¿Estas seguro que quieres asignar esta herramienta?")){
+            this.cambiarAsignacion(id,2);
+          }else{
+
+          }
+        break;
+        default:
+          window.alert("Error, por favor contacta a soporte");
+        break;
+      }
+    }
+
+  }
+  cambiarAsignacion(id, status){
+    this.cambiaCargando(1);
+    let url = `${this.global.apiRoot}/equipo/post/endpoint.php`;
+    let formData:FormData = new FormData();
+    formData.append('function',          'cambiarAsignacion');
+    formData.append('token',             this.global.token);
+    formData.append('rol_usuario_id',    this.global.rol);
+
+    formData.append('status',                 status);
+    formData.append('id_equipoDeSeguridad',   id);
+    formData.append('id_usuario',             this.id);
+
+    this.http.post(url, formData).subscribe(res =>  {
+      this.respuestaCalificar(res.json());
+    });
+
+  }
+  respuestaCalificar(res){
+    this.cambiaCargando(-1);
+    if(res.error!=0){
+      window.alert(res.estatus);
+      location.reload();
+    }else{
+      //reloadGrid
+     this.disponibleCompleto();
+    }
   }
 
 

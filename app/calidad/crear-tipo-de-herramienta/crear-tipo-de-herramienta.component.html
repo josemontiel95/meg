@@ -87,6 +87,81 @@
               </div>
             </div>
             <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="ocupacion">Ocupacion</label>
+                  <input type="text" id="ocupacion" class="form-control" placeholder="Ocupacion" required formControlName="ocupacion">
+                </div>
+                <div *ngIf="ocupacion.invalid && (ocupacion.dirty || ocupacion.touched)" class="alert alert-danger">
+                  <div *ngIf="ocupacion.errors.required">
+                    Ocupacion requeridos.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="puesto">Puesto</label>
+                  <input type="text" id="puesto" class="form-control" placeholder="Puesto" required formControlName="puesto">
+                </div>
+                <div *ngIf="puesto.invalid && (puesto.dirty || puesto.touched)" class="alert alert-danger">
+                  <div *ngIf="puesto.errors.required">
+                    Puesto requeridos.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="hrs">Hrs</label>
+                  <input type="text" id="hrs" class="form-control" placeholder="Hrs" required formControlName="hrs">
+                </div>
+                <div *ngIf="hrs.invalid && (hrs.dirty || hrs.touched)" class="alert alert-danger">
+                  <div *ngIf="hrs.errors.required">
+                    Hrs requeridas.
+                  </div>
+                  <div *ngIf="hrs.errors.pattern">
+                    Este campo es num&eacute;rico
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="areaTematica">&Aacute;rea tem&aacute;tica</label>
+                  <input type="text" id="areaTematica" class="form-control" placeholder="&Aacute;rea tem&aacute;tica " required formControlName="areaTematica">
+                </div>
+                <div *ngIf="areaTematica.invalid && (areaTematica.dirty || areaTematica.touched)" class="alert alert-danger">
+                  <div *ngIf="areaTematica.errors.required">
+                    &Aacute;rea tem&aacute;tica requerida.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="prefijo">Prefijo</label>
+                  <input type="text" id="prefijo" class="form-control" placeholder="Nombre" required formControlName="prefijo">
+                </div>
+                <div *ngIf="prefijo.invalid && (prefijo.dirty || prefijo.touched)" class="alert alert-danger">
+                  <div *ngIf="prefijo.errors.required">
+                    Prefijo requerido.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-12">
+                <div class="form-group">
+                  <label for="consecutivo">Consecutivo</label>
+                  <input type="text" id="consecutivo" class="form-control" placeholder="Consecutivo" required formControlName="consecutivo">
+                </div>
+                <div *ngIf="consecutivo.invalid && (consecutivo.dirty || consecutivo.touched)" class="alert alert-danger">
+                  <div *ngIf="consecutivo.errors.required">
+                    Consecutivo requerido.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
               <div class="col-md-12 col-12">
                 <div class="form-group">
                   <label for="descripcion">Descrioci&oacute;n</label>

@@ -74,6 +74,7 @@ export class ObraDetailComponent implements OnInit {
   constructor(private router: Router, private http: Http, private data: DataService, private route: ActivatedRoute) { 
     this.columnDefs = [
       {headerName: 'Ctrl', field: 'id_usuario' },
+      {headerName: 'N.D.E.', field: 'noDeEmpleado' },
       {headerName: 'Empleado', field: 'empleado' },
       {headerName: 'Proyecto', field: 'estadoPM' },
       {headerName: 'Asignacion', field: 'estadoPEM' },
